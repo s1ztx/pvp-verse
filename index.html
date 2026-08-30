@@ -68,14 +68,17 @@
   /* ===== background system ===== */
   /* CUSTOM BACKGROUND IMAGE — set your image path in the CSS variable below.
      Example: --custom-bg-url: url("assets/background.jpg");
-     Leave as none to use the default gradient/particle background only. */
+     Leave as none to use the default gradient/particle background only.
+     --custom-bg-dim controls how dark the overlay is (0 = no overlay / full
+     clarity, 1 = fully black). Lower it if the image looks too washed out,
+     raise it if text is hard to read. */
 :root{
   --custom-bg-url: url("assets/background.jpg");
 }
   .bg-image{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image:
-      linear-gradient(180deg, rgba(7,6,17,.82), rgba(7,6,17,.92)),
+      linear-gradient(180deg, rgba(7,6,17, var(--custom-bg-dim)), rgba(7,6,17, calc(var(--custom-bg-dim) + 0.15))),
       var(--custom-bg-url);
     background-size:cover;
     background-position:center;
@@ -246,15 +249,43 @@
     box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
     animation:float 6s ease-in-out infinite;
   }
+  /* ===== generative visual banners (replace flat blank gradients) ===== */
+  .blockviz{
+    position:relative; overflow:hidden;
+    background:
+      radial-gradient(circle at 22% 24%, rgba(255,255,255,.28), transparent 42%),
+      radial-gradient(circle at 82% 78%, rgba(255,255,255,.14), transparent 55%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,.07) 0 2px, transparent 2px 16px),
+      repeating-linear-gradient(-45deg, rgba(0,0,0,.12) 0 2px, transparent 2px 16px),
+      linear-gradient(135deg, var(--viz-a, var(--purple-2)), var(--viz-b, var(--blue-2)));
+    background-size:220% 220%, 220% 220%, 32px 32px, 32px 32px, 100% 100%;
+    animation:vizshift 9s ease-in-out infinite;
+  }
+  .blockviz::after{
+    content:''; position:absolute; inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,8 88,29 88,71 50,92 12,71 12,29' fill='none' stroke='white' stroke-width='2.5'/%3E%3Cline x1='50' y1='50' x2='50' y2='8' stroke='white' stroke-width='2.5'/%3E%3Cline x1='50' y1='50' x2='12' y2='71' stroke='white' stroke-width='2.5'/%3E%3Cline x1='50' y1='50' x2='88' y2='71' stroke='white' stroke-width='2.5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:center; background-size:42% auto;
+    opacity:.4; mix-blend-mode:overlay; transform:rotate(0deg);
+  }
+  .blockviz.viz-alt::after{ background-size:34% auto; opacity:.3; transform:rotate(18deg); }
+  .blockviz.viz-tilt::after{ transform:rotate(-14deg); }
+  @keyframes vizshift{
+    0%,100%{background-position:0% 0%, 100% 100%, 0 0, 0 0, 0% 0%;}
+    50%{background-position:20% 30%, 80% 70%, 16px 16px, -16px 16px, 0% 0%;}
+  }
+  @media (prefers-reduced-motion: reduce){ .blockviz{animation:none;} }
+
   .float-card .swatch{width:100%; height:88px; border-radius:10px; margin-bottom:12px;}
   .float-card h4{font-family:var(--font-display); font-size:13.5px; color:var(--text-hi); font-weight:600;}
   .float-card p{font-size:11.5px; color:var(--text-low); margin-top:3px;}
   .fc-1{top:0; left:20px; z-index:3; animation-delay:0s;}
   .fc-2{top:150px; left:190px; z-index:2; animation-delay:1.2s;}
   .fc-3{top:290px; left:10px; z-index:1; animation-delay:2.4s;}
-  .fc-1 .swatch{background:linear-gradient(135deg, var(--purple-1), var(--purple-3));}
-  .fc-2 .swatch{background:linear-gradient(135deg, var(--blue-1), var(--blue-2));}
-  .fc-3 .swatch{background:linear-gradient(135deg, var(--purple-3), var(--blue-1));}
+  .fc-1 .swatch{--viz-a:var(--purple-1); --viz-b:var(--purple-3);}
+  .fc-2 .swatch{--viz-a:var(--blue-1); --viz-b:var(--blue-2);}
+  .fc-3 .swatch{--viz-a:var(--purple-3); --viz-b:var(--blue-1);}
+  .fc-2 .swatch::after{transform:rotate(18deg);}
+  .fc-3 .swatch::after{transform:rotate(-14deg);}
   @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);}}
   .hero-ring{
     position:absolute; width:320px; height:320px; border-radius:50%; right:10px; top:60px;
@@ -292,7 +323,6 @@
   .pack-tile{padding:20px; height:170px; display:flex; flex-direction:column; justify-content:flex-end;}
   .pack-tile .tile-top{
     height:70px; border-radius:10px; margin-bottom:14px;
-    background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); opacity:.85;
   }
   .pack-tile h4{font-family:var(--font-display); color:var(--text-hi); font-size:14.5px; font-weight:600;}
   .pack-tile span{font-size:11.5px; color:var(--text-low); letter-spacing:.05em; text-transform:uppercase;}
@@ -396,12 +426,7 @@
     display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden; margin-bottom:60px;
   }
   .featured-article .fa-visual{
-    background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35));
     position:relative; min-height:280px;
-  }
-  .featured-article .fa-visual::after{
-    content:''; position:absolute; inset:0;
-    background-image:radial-gradient(circle at 30% 30%, rgba(255,255,255,.14), transparent 40%);
   }
   .featured-article .fa-body{padding:40px;}
   .meta-row{display:flex; gap:14px; align-items:center; font-size:12.5px; color:var(--text-low); font-family:var(--font-display); flex-wrap:wrap;}
@@ -412,7 +437,7 @@
 
   .news-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
   .news-card{padding:0; overflow:hidden; cursor:pointer;}
-  .news-card .nc-visual{height:140px; background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); opacity:.75;}
+  .news-card .nc-visual{height:140px;}
   .news-card .nc-body{padding:22px;}
   .news-card h3{font-family:var(--font-display); font-size:16.5px; font-weight:600; color:var(--text-hi); margin:12px 0 8px; line-height:1.35;}
   .news-card p{font-size:13.5px; color:var(--text-low); line-height:1.6;}
@@ -542,9 +567,9 @@
         </div>
         <div class="hero-visual" aria-hidden="true">
           <div class="hero-ring"></div>
-          <div class="float-card fc-1"><div class="swatch"></div><h4>16x — Short Swords</h4><p>1.8 PvP resource pack</p></div>
-          <div class="float-card fc-2"><div class="swatch"></div><h4>32x — Bedwars</h4><p>1.8 PvP resource pack</p></div>
-          <div class="float-card fc-3"><div class="swatch"></div><h4>64x — UHC</h4><p>1.8 PvP resource pack</p></div>
+          <div class="float-card fc-1"><div class="swatch blockviz"></div><h4>16x — Short Swords</h4><p>1.8 PvP resource pack</p></div>
+          <div class="float-card fc-2"><div class="swatch blockviz viz-alt"></div><h4>32x — Bedwars</h4><p>1.8 PvP resource pack</p></div>
+          <div class="float-card fc-3"><div class="swatch blockviz viz-tilt"></div><h4>64x — UHC</h4><p>1.8 PvP resource pack</p></div>
         </div>
       </div>
     </div>
@@ -566,10 +591,10 @@
           <p class="section-sub">Every pack in the PvP Verse library is built or curated around Minecraft 1.8 PvP — from short sword combat to Bedwars and Skywars resolutions.</p>
         </div>
         <div class="pack-preview-grid">
-          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>16x</h4><span>Resolution</span></div>
-          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>32x</h4><span>Resolution</span></div>
-          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>Short Swords</h4><span>Style</span></div>
-          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>Bedwars</h4><span>Gamemode</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top blockviz" style="--viz-a:var(--purple-1); --viz-b:var(--purple-3);"></div><h4>16x</h4><span>Resolution</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top blockviz viz-alt" style="--viz-a:var(--blue-1); --viz-b:var(--blue-2);"></div><h4>32x</h4><span>Resolution</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top blockviz viz-tilt" style="--viz-a:var(--purple-3); --viz-b:var(--blue-1);"></div><h4>Short Swords</h4><span>Style</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top blockviz" style="--viz-a:var(--purple-2); --viz-b:var(--purple-1);"></div><h4>Bedwars</h4><span>Gamemode</span></div>
         </div>
         <div style="margin-top:36px; text-align:center;">
           <a class="btn btn-ghost" href="#/packs"><span>View the full library</span><span class="arrow">→</span></a>
@@ -1257,12 +1282,38 @@
       return;
     }
     resultCount.textContent = `${list.length} pack${list.length === 1 ? "" : "s"} found`;
-    packsGrid.innerHTML = list.map(p => `
+    packsGrid.innerHTML = list.map(p => {
+      const v = vizVariant(p.name);
+      return `
       <div class="card pack-tile" style="height:auto; padding:20px;">
-        <div class="tile-top"></div>
+        <div class="tile-top blockviz ${v.cls}" style="--viz-a:${v.a}; --viz-b:${v.b};"></div>
         <h4>${p.name}</h4>
         <span>${(p.categories||[]).join(" · ")}</span>
-      </div>`).join("");
+      </div>`;
+    }).join("");
+  }
+
+  /* Deterministic "random" color/rotation pick per pack name so the grid
+     feels varied but is stable across re-renders (same pack always looks
+     the same, no flicker on filter/sort). */
+  const VIZ_PAIRS = [
+    ["var(--purple-1)","var(--purple-3)"],
+    ["var(--blue-1)","var(--blue-2)"],
+    ["var(--purple-3)","var(--blue-1)"],
+    ["var(--purple-2)","var(--purple-1)"],
+    ["var(--blue-2)","var(--purple-2)"]
+  ];
+  const VIZ_CLASSES = ["", "viz-alt", "viz-tilt"];
+  function hashStr(s){
+    let h = 0;
+    for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+  function vizVariant(name){
+    const h = hashStr(name);
+    const pair = VIZ_PAIRS[h % VIZ_PAIRS.length];
+    const cls = VIZ_CLASSES[(h >> 3) % VIZ_CLASSES.length];
+    return { a: pair[0], b: pair[1], cls };
   }
 
   /* Build category chips from whatever tags actually exist in PACKS_DATA,
@@ -1303,7 +1354,7 @@
 
   if(featured){
     document.getElementById("featuredArticle").innerHTML = `
-      <div class="fa-visual"></div>
+      <div class="fa-visual blockviz" style="--viz-a:var(--purple-2); --viz-b:var(--blue-1);"></div>
       <div class="fa-body">
         <div class="meta-row"><span class="tag">${featured.category}</span><span>${formatDate(featured.date)}</span><span>${featured.readTime}</span></div>
         <h2>${featured.title}</h2>
@@ -1315,7 +1366,7 @@
 
   document.getElementById("newsGrid").innerHTML = rest.map(a => `
     <article class="card news-card reveal" data-slug="${a.slug}" tabindex="0">
-      <div class="nc-visual"></div>
+      <div class="nc-visual blockviz ${vizVariant(a.title).cls}" style="--viz-a:${vizVariant(a.title).a}; --viz-b:${vizVariant(a.title).b};"></div>
       <div class="nc-body">
         <div class="meta-row"><span class="tag">${a.category}</span><span>${formatDate(a.date)}</span></div>
         <h3>${a.title}</h3>
@@ -1433,7 +1484,7 @@
      these buttons are wired to open Discord's landing page so no
      link on the site is dead. */
   document.querySelectorAll("[data-discord-invite]").forEach(a => {
-    a.setAttribute("href", "https://discord.com");
+    a.setAttribute("href", "https://discord.gg/K26SzkhsZ");
   });
 
   /* ============ INIT ============ */
