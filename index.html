@@ -72,9 +72,10 @@
      --custom-bg-dim controls how dark the overlay is (0 = no overlay / full
      clarity, 1 = fully black). Lower it if the image looks too washed out,
      raise it if text is hard to read. */
-:root{
-  --custom-bg-url: url("assets/background.jpg");
-}
+  :root{
+    --custom-bg-url: ("https://i.pinimg.com/originals/1a/05/0e/1a050eaff044d7fdf40e588189663997.jpg");
+    --custom-bg-dim: 0.15;
+  }
   .bg-image{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image:
@@ -1484,7 +1485,7 @@
      these buttons are wired to open Discord's landing page so no
      link on the site is dead. */
   document.querySelectorAll("[data-discord-invite]").forEach(a => {
-    a.setAttribute("href", "https://discord.gg/K26SzkhsZ");
+    a.setAttribute("href", "https://discord.com");
   });
 
   /* ============ INIT ============ */
