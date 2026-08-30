@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PvP Verse — Minecraft 1.8 PvP Packs &amp; Community</title>
+<meta name="description" content="PvP Verse is a Minecraft 1.8 PvP community featuring 300+ PvP packs, community rewards, and custom services." />
+<meta property="og:title" content="PvP Verse — Minecraft 1.8 PvP Packs & Community" />
+<meta property="og:description" content="300+ Minecraft 1.8 PvP packs, a competitive community, and custom rewards — all in one place." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-0:#070611;
+    --bg-1:#0B0920;
+    --bg-2:#0D0B1A;
+    --purple-1:#8B5CF6;
+    --purple-2:#7C3AED;
+    --purple-3:#A855F7;
+    --blue-1:#3B82F6;
+    --blue-2:#6366F1;
+    --hl-purple:#C084FC;
+    --hl-blue:#60A5FA;
+    --text-hi:#F5F3FF;
+    --text-mid:#C9C3E0;
+    --text-low:#8E88AC;
+    --border:rgba(168,139,250,.16);
+    --border-hover:rgba(192,132,252,.45);
+    --glass:rgba(20,16,40,.55);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-head:'Orbitron', sans-serif;
+    --font-body:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg-0);
+    color:var(--text-mid);
+    font-family:var(--font-body);
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit; cursor:pointer;}
+  img,svg{display:block; max-width:100%;}
+  ::selection{background:var(--purple-2); color:#fff;}
+
+  /* ===== scrollbar ===== */
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg-0);}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(var(--purple-2), var(--blue-2)); border-radius:10px;}
+
+  /* ===== focus ===== */
+  a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible{
+    outline:2px solid var(--hl-purple);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ===== background system ===== */
+  #bg-canvas{position:fixed; inset:0; z-index:0; pointer-events:none;}
+  .bg-glow{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
+  .bg-glow::before, .bg-glow::after{
+    content:''; position:absolute; border-radius:50%; filter:blur(110px); opacity:.35;
+  }
+  .bg-glow::before{
+    width:640px; height:640px; top:-220px; left:-160px;
+    background:radial-gradient(circle, var(--purple-2), transparent 70%);
+    animation:drift1 26s ease-in-out infinite;
+  }
+  .bg-glow::after{
+    width:560px; height:560px; bottom:-200px; right:-140px;
+    background:radial-gradient(circle, var(--blue-2), transparent 70%);
+    animation:drift2 30s ease-in-out infinite;
+  }
+  @keyframes drift1{0%,100%{transform:translate(0,0);} 50%{transform:translate(60px,80px);}}
+  @keyframes drift2{0%,100%{transform:translate(0,0);} 50%{transform:translate(-70px,-60px);}}
+  .bg-grid{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(139,92,246,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,92,246,.06) 1px, transparent 1px);
+    background-size:56px 56px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+  .bg-noise{
+    position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ===== layout ===== */
+  main{position:relative; z-index:1;}
+  .wrap{max-width:1240px; margin:0 auto; padding:0 28px;}
+  .page{display:none;}
+  .page.active{display:block; animation:pageIn .5s ease both;}
+  @keyframes pageIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;}}
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-display); font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--hl-purple); font-weight:600;
+  }
+  .eyebrow::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--hl-purple); box-shadow:0 0 10px var(--hl-purple);}
+
+  .grad-text{
+    background:linear-gradient(90deg, var(--hl-purple), var(--hl-blue));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+
+  .section{padding:110px 0;}
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-title{
+    font-family:var(--font-head); font-weight:800; letter-spacing:.01em;
+    font-size:clamp(30px,4.4vw,52px); color:var(--text-hi); line-height:1.08; margin-top:14px;
+  }
+  .section-sub{margin-top:18px; font-size:16.5px; line-height:1.65; color:var(--text-low); max-width:560px;}
+
+  /* ===== reveal ===== */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:none;}
+
+  /* ===== buttons ===== */
+  .btn{
+    position:relative; display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--font-display); font-weight:600; font-size:14.5px; letter-spacing:.02em;
+    padding:14px 24px; border-radius:12px; border:1px solid transparent; overflow:hidden;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .btn:active{transform:scale(.97);}
+  .btn-primary{
+    color:#fff; background:linear-gradient(135deg, var(--purple-2), var(--blue-2));
+    box-shadow:0 0 0 0 rgba(139,92,246,.5), 0 8px 30px -10px rgba(124,58,237,.65);
+  }
+  .btn-primary:hover{box-shadow:0 0 30px 2px rgba(139,92,246,.55), 0 8px 30px -8px rgba(124,58,237,.8); transform:translateY(-2px);}
+  .btn-ghost{
+    color:var(--text-hi); background:var(--glass); border-color:var(--border); backdrop-filter:blur(10px);
+  }
+  .btn-ghost:hover{border-color:var(--border-hover); transform:translateY(-2px);}
+  .btn .arrow{transition:transform .25s ease;}
+  .btn:hover .arrow{transform:translateX(4px);}
+
+  /* ===== navbar ===== */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:center;
+    padding:18px 20px;
+    transition:padding .35s ease;
+  }
+  header.scrolled{padding:10px 20px;}
+  .nav-inner{
+    width:100%; max-width:1180px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; border-radius:16px;
+    border:1px solid var(--border);
+    background:rgba(10,8,24,.55); backdrop-filter:blur(16px);
+    transition:background .35s ease, padding .35s ease, border-color .35s ease;
+  }
+  header.scrolled .nav-inner{padding:8px 16px; background:rgba(8,6,20,.78);}
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-head); font-weight:800; font-size:17px; color:var(--text-hi); letter-spacing:.02em;
+  }
+  .logo-mark{width:30px; height:30px;}
+  .nav-links{display:flex; align-items:center; gap:6px;}
+  .nav-links a{
+    position:relative; padding:9px 14px; font-family:var(--font-display); font-size:14px; font-weight:500;
+    color:var(--text-mid); border-radius:8px; transition:color .2s ease;
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:14px; right:14px; bottom:5px; height:1.5px;
+    background:linear-gradient(90deg, var(--hl-purple), var(--hl-blue));
+    transform:scaleX(0); transform-origin:left; transition:transform .25s ease;
+  }
+  .nav-links a:hover, .nav-links a.active{color:var(--text-hi);}
+  .nav-links a:hover::after, .nav-links a.active::after{transform:scaleX(1);}
+  .nav-cta{display:flex; align-items:center; gap:10px;}
+  .burger{
+    display:none; width:38px; height:38px; border-radius:9px; border:1px solid var(--border);
+    background:var(--glass); align-items:center; justify-content:center; flex-direction:column; gap:4px;
+  }
+  .burger span{width:16px; height:1.6px; background:var(--text-hi); transition:transform .25s ease, opacity .25s ease;}
+  .mobile-menu{
+    position:fixed; inset:78px 16px auto 16px; z-index:49;
+    background:rgba(9,7,22,.92); backdrop-filter:blur(18px);
+    border:1px solid var(--border); border-radius:16px; padding:10px;
+    display:flex; flex-direction:column; gap:2px;
+    transform:translateY(-14px) scale(.98); opacity:0; pointer-events:none;
+    transition:transform .3s ease, opacity .3s ease;
+  }
+  .mobile-menu.open{transform:none; opacity:1; pointer-events:auto;}
+  .mobile-menu a{padding:14px 12px; border-radius:10px; font-family:var(--font-display); font-weight:500; color:var(--text-mid);}
+  .mobile-menu a:hover{background:rgba(139,92,246,.1); color:var(--text-hi);}
+  .mobile-menu .btn{margin-top:8px; justify-content:center;}
+
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .burger{display:flex;}
+    .nav-cta .btn span.label{display:none;}
+  }
+
+  /* ===== hero ===== */
+  .hero{padding:168px 0 100px; position:relative;}
+  .hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:60px; align-items:center;}
+  .badge{
+    display:inline-flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px;
+    border:1px solid var(--border); background:var(--glass); font-size:12.5px; font-family:var(--font-display);
+    color:var(--text-mid); margin-bottom:26px;
+  }
+  .badge .dot{width:7px; height:7px; border-radius:50%; background:#4ADE80; box-shadow:0 0 8px #4ADE80; animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:.35;}}
+  .hero h1{
+    font-family:var(--font-head); font-weight:900; letter-spacing:0;
+    font-size:clamp(38px,6.4vw,74px); line-height:1.03; color:var(--text-hi);
+  }
+  .hero h1 span{display:block;}
+  .hero p.lead{margin-top:24px; font-size:18px; line-height:1.7; color:var(--text-low); max-width:520px;}
+  .hero-actions{display:flex; gap:14px; margin-top:36px; flex-wrap:wrap;}
+
+  .hero-visual{position:relative; height:460px;}
+  .float-card{
+    position:absolute; width:210px; padding:18px; border-radius:16px;
+    background:var(--glass); border:1px solid var(--border); backdrop-filter:blur(14px);
+    box-shadow:0 20px 60px -20px rgba(0,0,0,.6);
+    animation:float 6s ease-in-out infinite;
+  }
+  .float-card .swatch{width:100%; height:88px; border-radius:10px; margin-bottom:12px;}
+  .float-card h4{font-family:var(--font-display); font-size:13.5px; color:var(--text-hi); font-weight:600;}
+  .float-card p{font-size:11.5px; color:var(--text-low); margin-top:3px;}
+  .fc-1{top:0; left:20px; z-index:3; animation-delay:0s;}
+  .fc-2{top:150px; left:190px; z-index:2; animation-delay:1.2s;}
+  .fc-3{top:290px; left:10px; z-index:1; animation-delay:2.4s;}
+  .fc-1 .swatch{background:linear-gradient(135deg, var(--purple-1), var(--purple-3));}
+  .fc-2 .swatch{background:linear-gradient(135deg, var(--blue-1), var(--blue-2));}
+  .fc-3 .swatch{background:linear-gradient(135deg, var(--purple-3), var(--blue-1));}
+  @keyframes float{0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);}}
+  .hero-ring{
+    position:absolute; width:320px; height:320px; border-radius:50%; right:10px; top:60px;
+    border:1px solid var(--border); opacity:.5;
+  }
+  .hero-ring::before{
+    content:''; position:absolute; inset:-1px; border-radius:50%;
+    background:conic-gradient(from 0deg, transparent, var(--purple-2), transparent 40%);
+    animation:spin 10s linear infinite; opacity:.5;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr;} .hero-visual{height:340px; margin-top:20px;} }
+
+  /* ===== stats ===== */
+  .stats{border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:64px 0;}
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center;}
+  .stat h3{
+    font-family:var(--font-head); font-weight:800; font-size:clamp(32px,4vw,48px);
+    background:linear-gradient(180deg, var(--text-hi), var(--hl-purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .stat p{margin-top:8px; font-family:var(--font-display); font-size:12.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-low);}
+  @media (max-width:760px){.stats-grid{grid-template-columns:repeat(2,1fr); row-gap:36px;}}
+
+  /* ===== cards generic ===== */
+  .card{
+    position:relative; border-radius:18px; border:1px solid var(--border);
+    background:linear-gradient(180deg, rgba(139,92,246,.05), rgba(255,255,255,0) 40%), var(--glass);
+    backdrop-filter:blur(10px); transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .card:hover{transform:translateY(-6px); border-color:var(--border-hover); box-shadow:0 24px 50px -20px rgba(124,58,237,.4);}
+
+  /* ===== packs preview on home ===== */
+  .pack-preview-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+  .pack-tile{padding:20px; height:170px; display:flex; flex-direction:column; justify-content:flex-end;}
+  .pack-tile .tile-top{
+    height:70px; border-radius:10px; margin-bottom:14px;
+    background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); opacity:.85;
+  }
+  .pack-tile h4{font-family:var(--font-display); color:var(--text-hi); font-size:14.5px; font-weight:600;}
+  .pack-tile span{font-size:11.5px; color:var(--text-low); letter-spacing:.05em; text-transform:uppercase;}
+  @media (max-width:900px){.pack-preview-grid{grid-template-columns:repeat(2,1fr);}}
+
+  /* ===== reward cards ===== */
+  .reward-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:26px;}
+  .reward-card{padding:34px; overflow:hidden;}
+  .reward-card .rnum{
+    font-family:var(--font-head); font-size:13px; letter-spacing:.15em; color:var(--hl-purple); font-weight:700;
+  }
+  .reward-card h3{font-family:var(--font-head); font-size:26px; color:var(--text-hi); margin-top:16px; line-height:1.3;}
+  .reward-card .req{
+    margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;
+  }
+  .req-chip{
+    padding:7px 13px; border-radius:999px; font-size:12.5px; font-family:var(--font-display);
+    border:1px solid var(--border); color:var(--text-mid); background:rgba(139,92,246,.06);
+  }
+  .reward-card .arrow-down{margin:20px 0; color:var(--hl-blue); font-family:var(--font-head); font-size:13px; letter-spacing:.1em;}
+  .reward-card .unlock{font-family:var(--font-display); font-size:19px; color:var(--text-hi); font-weight:600;}
+  .reward-card::before{
+    content:''; position:absolute; inset:0; border-radius:18px; padding:1px;
+    background:linear-gradient(135deg, var(--purple-1), transparent 40%, var(--blue-1));
+    -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude; opacity:0; transition:opacity .3s ease;
+  }
+  .reward-card:hover::before{opacity:.7;}
+  @media (max-width:820px){.reward-grid{grid-template-columns:1fr;}}
+
+  /* ===== rewards page steps ===== */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-top:40px;}
+  .step{padding:26px; text-align:left;}
+  .step .snum{font-family:var(--font-head); font-size:28px; color:var(--hl-purple); font-weight:800;}
+  .step h4{font-family:var(--font-display); color:var(--text-hi); font-size:15px; margin-top:10px; font-weight:600;}
+  .step p{font-size:13.5px; margin-top:8px; color:var(--text-low); line-height:1.55;}
+  @media (max-width:900px){.steps{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.steps{grid-template-columns:1fr;}}
+
+  /* ===== footer ===== */
+  footer{border-top:1px solid var(--border); padding:64px 0 30px; position:relative;}
+  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; padding-bottom:40px;}
+  .footer-brand p{margin-top:12px; font-size:14px; color:var(--text-low); max-width:280px; line-height:1.6;}
+  .footer-col h5{font-family:var(--font-display); font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-hi); margin-bottom:14px;}
+  .footer-col a{display:block; padding:6px 0; font-size:14px; color:var(--text-low); transition:color .2s ease;}
+  .footer-col a:hover{color:var(--hl-purple);}
+  .footer-bottom{
+    border-top:1px solid var(--border); padding-top:22px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:12.5px; color:var(--text-low);
+  }
+  @media (max-width:760px){.footer-grid{grid-template-columns:1fr; gap:28px;}}
+
+  /* ===== PACKS PAGE ===== */
+  .packs-hero{padding:150px 0 40px;}
+  .packs-toolbar{
+    display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:26px;
+    padding:16px; border-radius:16px; border:1px solid var(--border); background:var(--glass);
+  }
+  .search-box{
+    flex:1; min-width:220px; display:flex; align-items:center; gap:10px; padding:11px 16px;
+    border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.02);
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .search-box:focus-within{border-color:var(--hl-purple); box-shadow:0 0 0 3px rgba(139,92,246,.18);}
+  .search-box input{
+    flex:1; background:transparent; border:none; color:var(--text-hi); font-size:14px; font-family:var(--font-body);
+  }
+  .search-box input:focus{outline:none;}
+  .sort-select{
+    padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.02);
+    color:var(--text-mid); font-size:13.5px; font-family:var(--font-display);
+  }
+  .chip-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:34px;}
+  .chip{
+    padding:9px 16px; border-radius:999px; font-size:13px; font-family:var(--font-display); font-weight:500;
+    border:1px solid var(--border); color:var(--text-mid); background:rgba(255,255,255,.02);
+    transition:all .2s ease;
+  }
+  .chip:hover{border-color:var(--border-hover); color:var(--text-hi);}
+  .chip.active{
+    color:#fff; background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); border-color:transparent;
+  }
+  .packs-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; min-height:180px;}
+  @media (max-width:900px){.packs-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:600px){.packs-grid{grid-template-columns:1fr;}}
+  .empty-state{
+    grid-column:1/-1; text-align:center; padding:70px 24px; border-radius:18px;
+    border:1px dashed var(--border); background:rgba(139,92,246,.03);
+  }
+  .empty-state .glyph{
+    width:52px; height:52px; margin:0 auto 20px; border-radius:14px;
+    background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); opacity:.8;
+  }
+  .empty-state h3{font-family:var(--font-display); color:var(--text-hi); font-size:18px; font-weight:600;}
+  .empty-state p{margin-top:10px; font-size:14px; color:var(--text-low); max-width:420px; margin-inline:auto; line-height:1.6;}
+  .count-line{font-family:var(--font-display); font-size:13px; color:var(--text-low); margin-bottom:18px;}
+
+  /* ===== NEWS PAGE ===== */
+  .news-hero{padding:150px 0 40px;}
+  .featured-article{
+    display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden; margin-bottom:60px;
+  }
+  .featured-article .fa-visual{
+    background:linear-gradient(135deg, rgba(139,92,246,.35), rgba(59,130,246,.35));
+    position:relative; min-height:280px;
+  }
+  .featured-article .fa-visual::after{
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(circle at 30% 30%, rgba(255,255,255,.14), transparent 40%);
+  }
+  .featured-article .fa-body{padding:40px;}
+  .meta-row{display:flex; gap:14px; align-items:center; font-size:12.5px; color:var(--text-low); font-family:var(--font-display); flex-wrap:wrap;}
+  .meta-row .tag{color:var(--hl-purple); font-weight:600; letter-spacing:.05em; text-transform:uppercase;}
+  .featured-article h2{font-family:var(--font-head); font-size:clamp(22px,3vw,30px); color:var(--text-hi); margin:16px 0 12px; line-height:1.25;}
+  .featured-article p{font-size:14.5px; line-height:1.7; color:var(--text-low);}
+  @media (max-width:820px){.featured-article{grid-template-columns:1fr;} .featured-article .fa-visual{min-height:180px;}}
+
+  .news-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  .news-card{padding:0; overflow:hidden; cursor:pointer;}
+  .news-card .nc-visual{height:140px; background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); opacity:.75;}
+  .news-card .nc-body{padding:22px;}
+  .news-card h3{font-family:var(--font-display); font-size:16.5px; font-weight:600; color:var(--text-hi); margin:12px 0 8px; line-height:1.35;}
+  .news-card p{font-size:13.5px; color:var(--text-low); line-height:1.6;}
+  @media (max-width:900px){.news-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:600px){.news-grid{grid-template-columns:1fr;}}
+
+  .article-page{padding:150px 0 100px;}
+  .article-content{max-width:720px; margin:0 auto;}
+  .article-content h1{font-family:var(--font-head); font-size:clamp(28px,4vw,42px); color:var(--text-hi); margin:18px 0 20px; line-height:1.2;}
+  .article-content p{font-size:16px; line-height:1.85; color:var(--text-mid); margin-bottom:20px;}
+  .back-link{display:inline-flex; align-items:center; gap:8px; font-family:var(--font-display); font-size:13.5px; color:var(--hl-purple); margin-bottom:26px;}
+
+  /* ===== RULES PAGE ===== */
+  .rules-hero{padding:150px 0 40px;}
+  .rule-category{margin-bottom:20px;}
+  .rule-category summary{
+    list-style:none; cursor:pointer; padding:22px 24px; border-radius:16px; border:1px solid var(--border);
+    background:var(--glass); display:flex; justify-content:space-between; align-items:center; gap:16px;
+    font-family:var(--font-display); font-weight:600; color:var(--text-hi); font-size:16px;
+    transition:border-color .2s ease;
+  }
+  .rule-category summary::-webkit-details-marker{display:none;}
+  .rule-category summary .chev{transition:transform .25s ease; color:var(--hl-purple); font-size:14px;}
+  .rule-category[open] summary .chev{transform:rotate(180deg);}
+  .rule-category[open] summary{border-color:var(--border-hover); border-bottom-left-radius:0; border-bottom-right-radius:0;}
+  .rule-category .rule-body{
+    border:1px solid var(--border); border-top:none; border-radius:0 0 16px 16px; padding:8px 24px 22px; background:rgba(139,92,246,.02);
+  }
+  .rule-category .rule-body li{
+    padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:14.5px; color:var(--text-mid); line-height:1.6;
+    display:flex; gap:10px;
+  }
+  .rule-category .rule-body li:last-child{border-bottom:none;}
+  .rule-category .rule-body li::before{content:'—'; color:var(--hl-blue); flex-shrink:0;}
+  .rules-note{
+    margin-top:36px; padding:20px 24px; border-radius:14px; border:1px solid var(--border);
+    background:rgba(96,165,250,.05); font-size:14px; color:var(--text-low); line-height:1.65;
+  }
+
+  /* ===== ABOUT PAGE ===== */
+  .about-hero{padding:160px 0 40px; text-align:center;}
+  .about-hero .section-head{margin:0 auto;}
+  .about-hero .section-sub{margin-inline:auto;}
+  .about-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px; margin-top:20px;}
+  .about-card{padding:28px;}
+  .about-card .ic{width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg, var(--purple-2), var(--blue-2)); margin-bottom:16px;}
+  .about-card h4{font-family:var(--font-display); color:var(--text-hi); font-size:15.5px; font-weight:600; margin-bottom:8px;}
+  .about-card p{font-size:13.5px; color:var(--text-low); line-height:1.6;}
+  @media (max-width:900px){.about-grid{grid-template-columns:1fr;}}
+  .about-cta{text-align:center; padding:70px 0 20px;}
+
+  /* ===== 404 ===== */
+  .page-404{min-height:80vh; display:flex; align-items:center; justify-content:center; text-align:center; padding:160px 20px 80px;}
+  .page-404 h1{font-family:var(--font-head); font-size:clamp(64px,12vw,140px); font-weight:900; line-height:1;
+    background:linear-gradient(135deg, var(--hl-purple), var(--hl-blue)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .page-404 h2{font-family:var(--font-display); font-size:20px; color:var(--text-hi); margin-top:10px;}
+  .page-404 p{margin-top:12px; color:var(--text-low); font-size:15px; max-width:420px; margin-inline:auto;}
+  .page-404 .btn{margin-top:30px;}
+
+  @media (max-width:900px){
+    .section{padding:80px 0;}
+    .stats-grid, .pack-preview-grid, .news-grid, .about-grid{gap:16px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="bg-glow" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-noise" aria-hidden="true"></div>
+
+<header id="siteHeader">
+  <div class="nav-inner">
+    <a href="#/" class="logo" aria-label="PvP Verse home">
+      <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="lg1" x1="0" y1="0" x2="32" y2="32"><stop offset="0" stop-color="#A855F7"/><stop offset="1" stop-color="#3B82F6"/></linearGradient></defs>
+        <path d="M16 2 L29 9 V23 L16 30 L3 23 V9 Z" stroke="url(#lg1)" stroke-width="2" fill="rgba(139,92,246,0.12)"/>
+        <path d="M11 11 L16 22 L21 11" stroke="url(#lg1)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      PvP Verse
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#/" data-route="/">Home</a>
+      <a href="#/packs" data-route="/packs">Packs</a>
+      <a href="#/news" data-route="/news">News</a>
+      <a href="#/rules" data-route="/rules">Rules</a>
+      <a href="#/rewards" data-route="/rewards">Rewards</a>
+      <a href="#/about" data-route="/about">About</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#" data-discord-invite="true" target="_blank" rel="noopener">
+        <span class="label">Join Discord</span> <span class="arrow">→</span>
+      </a>
+      <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#/" data-route="/">Home</a>
+  <a href="#/packs" data-route="/packs">Packs</a>
+  <a href="#/news" data-route="/news">News</a>
+  <a href="#/rules" data-route="/rules">Rules</a>
+  <a href="#/rewards" data-route="/rewards">Rewards</a>
+  <a href="#/about" data-route="/about">About</a>
+  <a class="btn btn-primary" href="#" data-discord-invite="true" target="_blank" rel="noopener">Join Discord →</a>
+</div>
+
+<main>
+
+  <!-- ================= HOME ================= -->
+  <section class="page" id="page-home" data-page="/">
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="badge"><span class="dot"></span> PvP Verse is live</span>
+          <h1><span>THE HOME OF</span><span class="grad-text">MINECRAFT PVP.</span></h1>
+          <p class="lead">300+ Minecraft 1.8 PvP packs, a competitive community, and custom rewards — all in one place.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#/packs"><span>Explore 300+ Packs</span><span class="arrow">→</span></a>
+            <a class="btn btn-ghost" href="#" data-discord-invite="true" target="_blank" rel="noopener"><span>Join PvP Verse</span><span class="arrow">→</span></a>
+          </div>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-ring"></div>
+          <div class="float-card fc-1"><div class="swatch"></div><h4>16x — Short Swords</h4><p>1.8 PvP resource pack</p></div>
+          <div class="float-card fc-2"><div class="swatch"></div><h4>32x — Bedwars</h4><p>1.8 PvP resource pack</p></div>
+          <div class="float-card fc-3"><div class="swatch"></div><h4>64x — UHC</h4><p>1.8 PvP resource pack</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="wrap stats-grid">
+        <div class="stat reveal"><h3 data-count="300" data-suffix="+">0</h3><p>PvP Packs</p></div>
+        <div class="stat reveal"><h3 data-count="1.8" data-decimal="1">0</h3><p>PvP Focus</p></div>
+        <div class="stat reveal"><h3 data-static="24/7">24/7</h3><p>Community</p></div>
+        <div class="stat reveal"><h3 data-count="2" data-suffix=""></h3><p>Invites → Website</p></div>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Pack Library</span>
+          <h2 class="section-title">300+ PACKS.<br><span class="grad-text">ONE VERSE.</span></h2>
+          <p class="section-sub">Every pack in the PvP Verse library is built or curated around Minecraft 1.8 PvP — from short sword combat to Bedwars and Skywars resolutions.</p>
+        </div>
+        <div class="pack-preview-grid">
+          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>16x</h4><span>Resolution</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>32x</h4><span>Resolution</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>Short Swords</h4><span>Style</span></div>
+          <div class="card pack-tile reveal"><div class="tile-top"></div><h4>Bedwars</h4><span>Gamemode</span></div>
+        </div>
+        <div style="margin-top:36px; text-align:center;">
+          <a class="btn btn-ghost" href="#/packs"><span>View the full library</span><span class="arrow">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Reward System</span>
+          <h2 class="section-title">Support PvP Verse.<br><span class="grad-text">Unlock something insane.</span></h2>
+          <p class="section-sub">Boost the server or bring in members, and PvP Verse builds something custom for you in return.</p>
+        </div>
+        <div class="reward-grid" id="homeRewardGrid"></div>
+        <div style="margin-top:32px; text-align:center;">
+          <a class="btn btn-ghost" href="#/rewards"><span>See the full reward system</span><span class="arrow">→</span></a>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ================= PACKS ================= -->
+  <section class="page" id="page-packs" data-page="/packs">
+    <div class="wrap packs-hero">
+      <span class="eyebrow reveal">Pack Library</span>
+      <h1 class="section-title reveal">300+ PACKS.<br><span class="grad-text">ONE VERSE.</span></h1>
+      <p class="section-sub reveal">PvP Verse focuses exclusively on Minecraft 1.8 PvP — every pack here is organized by resolution, style, and gamemode so you can find the right feel fast.</p>
+    </div>
+    <div class="wrap" style="padding-bottom:110px;">
+      <div class="packs-toolbar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8E88AC" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="packSearch" placeholder="Search the pack library…" aria-label="Search packs" />
+        </div>
+        <select class="sort-select" id="packSort" aria-label="Sort packs">
+          <option value="name">Sort: Name (A–Z)</option>
+          <option value="newest">Sort: Newest</option>
+          <option value="resolution">Sort: Resolution</option>
+        </select>
+      </div>
+      <div class="chip-row" id="chipRow">
+        <button class="chip active" data-cat="all">All</button>
+        <button class="chip" data-cat="16x">16x</button>
+        <button class="chip" data-cat="32x">32x</button>
+        <button class="chip" data-cat="64x">64x</button>
+        <button class="chip" data-cat="128x">128x</button>
+        <button class="chip" data-cat="Short Swords">Short Swords</button>
+        <button class="chip" data-cat="Bedwars">Bedwars</button>
+        <button class="chip" data-cat="Skywars">Skywars</button>
+        <button class="chip" data-cat="UHC">UHC</button>
+        <button class="chip" data-cat="FPS">FPS</button>
+      </div>
+      <p class="count-line" id="resultCount"></p>
+      <div class="packs-grid" id="packsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= NEWS LIST ================= -->
+  <section class="page" id="page-news" data-page="/news">
+    <div class="wrap news-hero">
+      <span class="eyebrow reveal">Verse Log</span>
+      <h1 class="section-title reveal">WHAT'S HAPPENING<br><span class="grad-text">IN THE VERSE.</span></h1>
+      <p class="section-sub reveal">Updates on the pack library, the reward system, and where PvP Verse is headed next.</p>
+    </div>
+    <div class="wrap" style="padding-bottom:110px;">
+      <article class="card featured-article reveal" id="featuredArticle" tabindex="0"></article>
+      <div class="news-grid" id="newsGrid"></div>
+    </div>
+  </section>
+
+  <!-- ================= NEWS ARTICLE ================= -->
+  <section class="page" id="page-article" data-page="/news/article">
+    <div class="wrap article-page">
+      <div class="article-content">
+        <a href="#/news" class="back-link">← Back to News</a>
+        <div id="articleBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RULES ================= -->
+  <section class="page" id="page-rules" data-page="/rules">
+    <div class="wrap rules-hero">
+      <span class="eyebrow reveal">Community Handbook</span>
+      <h1 class="section-title reveal">KEEP THE<br><span class="grad-text">VERSE CLEAN.</span></h1>
+      <p class="section-sub reveal">Simple rules that keep PvP Verse fair, respectful, and worth being part of.</p>
+    </div>
+    <div class="wrap" style="padding-bottom:60px;" id="rulesList"></div>
+    <div class="wrap" style="padding-bottom:110px;">
+      <div class="rules-note reveal">
+        The official PvP Verse Discord server rules take priority if anything here differs from them. When in doubt, ask a staff member.
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REWARDS ================= -->
+  <section class="page" id="page-rewards" data-page="/rewards">
+    <div class="wrap packs-hero">
+      <span class="eyebrow reveal">Reward System</span>
+      <h1 class="section-title reveal">SUPPORT THE VERSE.<br><span class="grad-text">UNLOCK MORE.</span></h1>
+      <p class="section-sub reveal">PvP Verse runs on its community. Contribute invites or boosts, and get something custom built in return.</p>
+    </div>
+    <div class="wrap" style="padding-bottom:20px;">
+      <div class="reward-grid" id="rewardsPageGrid"></div>
+    </div>
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">How it works</span>
+          <h2 class="section-title">Four steps to your reward.</h2>
+        </div>
+        <div class="steps" id="stepsGrid"></div>
+      </div>
+    </section>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="page" id="page-about" data-page="/about">
+    <div class="wrap about-hero">
+      <span class="eyebrow reveal">About PvP Verse</span>
+      <div class="section-head reveal" style="margin-inline:auto;">
+        <h1 class="section-title">A VERSE BUILT<br><span class="grad-text">FOR MINECRAFT PVP.</span></h1>
+        <p class="section-sub">PvP Verse is a Minecraft 1.8 PvP community built around one idea: give PvPers the packs, people, and rewards worth sticking around for.</p>
+      </div>
+      <div class="about-grid">
+        <div class="card about-card reveal"><div class="ic"></div><h4>1.8 PvP, exclusively</h4><p>No distractions — every pack, every discussion, and every update is built around Minecraft 1.8 PvP combat.</p></div>
+        <div class="card about-card reveal"><div class="ic"></div><h4>300+ curated packs</h4><p>A growing library organized by resolution, style, and gamemode, so finding your feel takes seconds, not hours.</p></div>
+        <div class="card about-card reveal"><div class="ic"></div><h4>A real community</h4><p>PvP Verse lives on Discord — active, competitive, and built by the people who use it every day.</p></div>
+        <div class="card about-card reveal"><div class="ic"></div><h4>Custom rewards</h4><p>Invites and boosts turn into real, custom-built rewards for the people who help the Verse grow.</p></div>
+        <div class="card about-card reveal"><div class="ic"></div><h4>Growing ecosystem</h4><p>From the pack library to the website itself, PvP Verse is continuously rebuilt and expanded.</p></div>
+        <div class="card about-card reveal"><div class="ic"></div><h4>Open to everyone</h4><p>Whether you're here for packs, PvP, or the community — PvP Verse is built to be worth joining.</p></div>
+      </div>
+      <div class="about-cta reveal">
+        <a class="btn btn-primary" href="#" data-discord-invite="true" target="_blank" rel="noopener"><span>ENTER THE VERSE</span><span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 404 ================= -->
+  <section class="page" id="page-404" data-page="/404">
+    <div class="page-404">
+      <div>
+        <h1>404</h1>
+        <h2>This part of the Verse doesn't exist.</h2>
+        <p>The page you're looking for was moved, renamed, or never existed. Head back to the home base.</p>
+        <a class="btn btn-primary" href="#/"><span>Back to Home</span><span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#/" class="logo">
+          <svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M16 2 L29 9 V23 L16 30 L3 23 V9 Z" stroke="#A855F7" stroke-width="2" fill="rgba(139,92,246,0.12)"/>
+            <path d="M11 11 L16 22 L21 11" stroke="#60A5FA" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+          PvP Verse
+        </a>
+        <p>Built for Minecraft PvP.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <a href="#/">Home</a>
+        <a href="#/packs">Packs</a>
+        <a href="#/news">News</a>
+        <a href="#/rules">Rules</a>
+        <a href="#/rewards">Rewards</a>
+      </div>
+      <div class="footer-col">
+        <h5>Community</h5>
+        <a href="#" data-discord-invite="true" target="_blank" rel="noopener">Join Discord</a>
+        <a href="#/about">About PvP Verse</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>PvP Verse is an independent community project and is not affiliated with Mojang Studios or Microsoft.</span>
+      <span>© 2026 PvP Verse. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ DATA LAYER ============
+     Real content sources go here. Packs are intentionally empty —
+     no fake pack entries are rendered. Drop real pack objects into
+     PACKS_DATA (same shape) and the search/filter/sort UI will work
+     immediately with no other changes needed. */
+  const PACKS_DATA = []; // { name, categories:[...], resolution, addedAt }
+
+  const NEWS_DATA = [
+    {
+      slug: "pvp-verse-goes-live",
+      title: "PvP Verse Goes Live",
+      category: "Launch",
+      date: "2026-01-12",
+      readTime: "3 min read",
+      excerpt: "PvP Verse is officially live — a Minecraft 1.8 PvP community built around a growing pack library, an active Discord, and a reward system for the people who help it grow.",
+      body: [
+        "PvP Verse has officially launched as a dedicated home for Minecraft 1.8 PvP. The project brings together a curated pack library, an active Discord community, and a reward system into a single, focused space.",
+        "Unlike broader Minecraft communities, PvP Verse exists for one purpose: giving 1.8 PvP players the resources and people worth sticking around for. That means no distractions — just packs, PvP, and a community built around both.",
+        "The launch includes the first wave of the pack library, the community rules, and the reward system that turns invites and boosts into custom-built rewards. More packs, articles, and features will roll out as the community grows."
+      ],
+      featured: true
+    },
+    {
+      slug: "the-pack-library-explained",
+      title: "300+ PvP Packs, Organized in One Library",
+      category: "Packs",
+      date: "2026-01-14",
+      readTime: "4 min read",
+      excerpt: "A look at how PvP Verse organizes its growing collection of Minecraft 1.8 PvP packs by resolution, style, and gamemode.",
+      body: [
+        "At the center of PvP Verse is its pack library — a growing collection of Minecraft 1.8 PvP resource packs organized so members can find the right feel in seconds.",
+        "Packs are structured around three axes: resolution (16x through 128x), combat style (including short sword builds), and gamemode focus (Bedwars, Skywars, UHC, and FPS-oriented setups). This lets the search and filter tools on the Packs page narrow results quickly without digging through unrelated content.",
+        "The library is built to scale well past its current size. As new packs are added, they slot directly into the existing category system — no restructuring required."
+      ]
+    },
+    {
+      slug: "reward-system-explained",
+      title: "The Reward System: Invites, Boosts, and Custom Builds",
+      category: "Rewards",
+      date: "2026-01-16",
+      readTime: "3 min read",
+      excerpt: "How PvP Verse turns community support — invites and server boosts — into custom websites and Discord bots.",
+      body: [
+        "PvP Verse runs on its community, and the reward system is built to give something real back to the people who help it grow.",
+        "Bringing in 2 invites plus 2 server boosts unlocks a custom website, built specifically for the person who reached the milestone. A single server boost on its own unlocks a custom Discord bot.",
+        "The process is simple: support the server, reach the milestone, reach out to the appropriate staff member, and the custom build begins. Full details live on the Rewards page."
+      ]
+    },
+    {
+      slug: "website-rebuilt",
+      title: "The PvP Verse Website Has Been Rebuilt",
+      category: "Update",
+      date: "2026-01-20",
+      readTime: "2 min read",
+      excerpt: "A new site for PvP Verse — built around the pack library, the reward system, and the community itself.",
+      body: [
+        "The PvP Verse website has been rebuilt from the ground up around the brand's purple-and-blue identity and its Minecraft 1.8 PvP focus.",
+        "The new site includes a full Packs browser with search, filtering, and sorting; a News section for community updates; a Rules page laid out as a proper handbook; and a dedicated Rewards page explaining the invite-and-boost system in detail.",
+        "This is the foundation the site will keep building on as the pack library and community grow."
+      ]
+    },
+    {
+      slug: "organizing-1-8-packs",
+      title: "How We're Organizing 1.8 PvP Packs by Resolution and Style",
+      category: "Packs",
+      date: "2026-01-24",
+      readTime: "3 min read",
+      excerpt: "A behind-the-scenes look at the category system used to sort the PvP Verse pack library.",
+      body: [
+        "Sorting a large 1.8 PvP pack collection well means thinking about how players actually search for packs — by resolution, by combat style, or by the gamemode they're playing.",
+        "That's why the PvP Verse library uses three overlapping category types: resolution tiers from 16x to 128x, combat styles like short swords, and gamemode-oriented sets for Bedwars, Skywars, UHC, and FPS-style play.",
+        "This structure means a single pack can appear under multiple relevant filters, so nothing gets buried under the wrong tag."
+      ]
+    },
+    {
+      slug: "community-growth",
+      title: "Community Growth and What's Next",
+      category: "Community",
+      date: "2026-01-28",
+      readTime: "2 min read",
+      excerpt: "A quick look at where PvP Verse is headed as the community and pack library continue to grow.",
+      body: [
+        "Since launch, PvP Verse has focused on getting the fundamentals right: a working pack library, a clear reward system, and community rules that keep things fair for everyone.",
+        "Next up is continuing to expand the pack library toward its full 300+ target, adding more community-driven content to the News section, and refining the reward system based on member feedback.",
+        "As always, the fastest way to stay current on all of it is the PvP Verse Discord."
+      ]
+    }
+  ];
+
+  const RULES_DATA = [
+    {
+      title: "Respect & Conduct",
+      rules: [
+        "Treat every member with respect, regardless of skill level or experience.",
+        "No harassment, hate speech, or targeted insults toward any member.",
+        "Keep disagreements civil — settle PvP rivalries in-game, not in chat.",
+        "No discrimination based on race, gender, religion, sexuality, or nationality."
+      ]
+    },
+    {
+      title: "Discord & Server Integrity",
+      rules: [
+        "Follow Discord's Terms of Service and Community Guidelines at all times.",
+        "Follow staff instructions — moderators are here to keep the Verse fair.",
+        "No impersonating staff members or other community members.",
+        "Report bugs or exploits to staff instead of abusing them."
+      ]
+    },
+    {
+      title: "Content & Spam",
+      rules: [
+        "No spamming messages, mentions, or reactions across channels.",
+        "No advertising other servers, communities, or products without staff permission.",
+        "No malicious links, files, or content of any kind.",
+        "Keep NSFW, graphic, or otherwise inappropriate content out of every channel."
+      ]
+    },
+    {
+      title: "Reward System Integrity",
+      rules: [
+        "No fake, bought, or fraudulent invites used to reach reward milestones.",
+        "No abusing or exploiting the boost or invite tracking systems.",
+        "Reward requests must go through the appropriate staff member — not shortcuts.",
+        "Attempting to game the reward system may result in forfeiting earned rewards."
+      ]
+    }
+  ];
+
+  const REWARDS = [
+    {
+      num: "REWARD 01",
+      reqs: ["2 Invites", "2 Boosts"],
+      unlock: "Custom Website"
+    },
+    {
+      num: "REWARD 02",
+      reqs: ["1 Boost"],
+      unlock: "Custom Discord Bot"
+    }
+  ];
+
+  const STEPS = [
+    { title: "Support PvP Verse", body: "Invite friends to the server or drop a server boost — every bit of support counts toward a milestone." },
+    { title: "Meet the milestone", body: "Reach the invite and boost requirement for the reward you're after." },
+    { title: "Contact staff", body: "Reach out to the appropriate PvP Verse staff member to confirm your milestone." },
+    { title: "Get your reward", body: "Your custom website or Discord bot gets built once your reward is confirmed." }
+  ];
+
+  /* ============ ROUTING ============ */
+  const routes = ["/", "/packs", "/news", "/rules", "/rewards", "/about"];
+
+  function currentPath(){
+    const hash = window.location.hash.replace(/^#/, "") || "/";
+    return hash;
+  }
+
+  function render404(){
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById("page-404").classList.add("active");
+    setActiveNav(null);
+  }
+
+  function setActiveNav(path){
+    document.querySelectorAll(".nav-links a, .mobile-menu a").forEach(a => {
+      a.classList.toggle("active", a.dataset.route === path);
+    });
+  }
+
+  function showPage(id, path){
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    setActiveNav(path);
+    window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+    initRevealObserver();
+  }
+
+  function router(){
+    const path = currentPath();
+    closeMobileMenu();
+
+    if(path === "/" ){ showPage("page-home", "/"); return; }
+    if(path === "/packs"){ showPage("page-packs", "/packs"); return; }
+    if(path === "/news"){ showPage("page-news", "/news"); return; }
+    if(path === "/rules"){ showPage("page-rules", "/rules"); return; }
+    if(path === "/rewards"){ showPage("page-rewards", "/rewards"); return; }
+    if(path === "/about"){ showPage("page-about", "/about"); return; }
+    if(path.indexOf("/news/") === 0){
+      const slug = path.split("/news/")[1];
+      const article = NEWS_DATA.find(a => a.slug === slug);
+      if(article){
+        renderArticle(article);
+        showPage("page-article", "/news");
+        return;
+      }
+    }
+    render404();
+  }
+
+  window.addEventListener("hashchange", router);
+
+  /* ============ NAVBAR SCROLL & MOBILE MENU ============ */
+  const header = document.getElementById("siteHeader");
+  window.addEventListener("scroll", () => {
+    header.classList.toggle("scrolled", window.scrollY > 24);
+  }, { passive:true });
+
+  const burger = document.getElementById("burgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+  function closeMobileMenu(){
+    mobileMenu.classList.remove("open");
+    burger.setAttribute("aria-expanded", "false");
+  }
+  burger.addEventListener("click", () => {
+    const open = mobileMenu.classList.toggle("open");
+    burger.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", (e) => {
+    if(mobileMenu.classList.contains("open") && !mobileMenu.contains(e.target) && e.target !== burger && !burger.contains(e.target)){
+      closeMobileMenu();
+    }
+  });
+
+  /* ============ REWARD CARDS (home + rewards page) ============ */
+  function rewardCardHTML(r){
+    return `<div class="card reward-card reveal">
+      <span class="rnum">${r.num}</span>
+      <div class="req">${r.reqs.map(x => `<span class="req-chip">${x}</span>`).join("")}</div>
+      <div class="arrow-down">↓ UNLOCKS</div>
+      <div class="unlock grad-text">${r.unlock}</div>
+    </div>`;
+  }
+  document.getElementById("homeRewardGrid").innerHTML = REWARDS.map(rewardCardHTML).join("");
+  document.getElementById("rewardsPageGrid").innerHTML = REWARDS.map(rewardCardHTML).join("");
+  document.getElementById("stepsGrid").innerHTML = STEPS.map((s,i) => `
+    <div class="card step reveal">
+      <div class="snum">0${i+1}</div>
+      <h4>${s.title}</h4>
+      <p>${s.body}</p>
+    </div>`).join("");
+
+  /* ============ PACKS PAGE LOGIC ============ */
+  const packSearch = document.getElementById("packSearch");
+  const packSort = document.getElementById("packSort");
+  const chipRow = document.getElementById("chipRow");
+  const packsGrid = document.getElementById("packsGrid");
+  const resultCount = document.getElementById("resultCount");
+  let activeCat = "all";
+
+  function renderPacks(){
+    let list = PACKS_DATA.slice();
+    if(activeCat !== "all"){
+      list = list.filter(p => p.categories && p.categories.includes(activeCat));
+    }
+    const q = packSearch.value.trim().toLowerCase();
+    if(q){
+      list = list.filter(p => p.name.toLowerCase().includes(q));
+    }
+    const sortVal = packSort.value;
+    if(sortVal === "name") list.sort((a,b) => a.name.localeCompare(b.name));
+    if(sortVal === "newest") list.sort((a,b) => new Date(b.addedAt) - new Date(a.addedAt));
+    if(sortVal === "resolution") list.sort((a,b) => (a.resolution||0) - (b.resolution||0));
+
+    if(list.length === 0){
+      resultCount.textContent = "0 packs found";
+      packsGrid.innerHTML = `<div class="empty-state">
+        <div class="glyph"></div>
+        <h3>The library isn't connected yet</h3>
+        <p>Search, filtering, and sorting are fully wired up. Once the real PvP Verse pack dataset is connected, matching packs will appear here automatically.</p>
+      </div>`;
+      return;
+    }
+    resultCount.textContent = `${list.length} pack${list.length === 1 ? "" : "s"} found`;
+    packsGrid.innerHTML = list.map(p => `
+      <div class="card pack-tile" style="height:auto; padding:20px;">
+        <div class="tile-top"></div>
+        <h4>${p.name}</h4>
+        <span>${(p.categories||[]).join(" · ")}</span>
+      </div>`).join("");
+  }
+
+  packSearch.addEventListener("input", renderPacks);
+  packSort.addEventListener("change", renderPacks);
+  chipRow.addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if(!chip) return;
+    chipRow.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeCat = chip.dataset.cat;
+    renderPacks();
+  });
+  renderPacks();
+
+  /* ============ NEWS RENDER ============ */
+  function formatDate(iso){
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  const featured = NEWS_DATA.find(a => a.featured);
+  const rest = NEWS_DATA.filter(a => !a.featured);
+
+  if(featured){
+    document.getElementById("featuredArticle").innerHTML = `
+      <div class="fa-visual"></div>
+      <div class="fa-body">
+        <div class="meta-row"><span class="tag">${featured.category}</span><span>${formatDate(featured.date)}</span><span>${featured.readTime}</span></div>
+        <h2>${featured.title}</h2>
+        <p>${featured.excerpt}</p>
+      </div>`;
+    document.getElementById("featuredArticle").addEventListener("click", () => { window.location.hash = "#/news/" + featured.slug; });
+    document.getElementById("featuredArticle").addEventListener("keypress", (e) => { if(e.key === "Enter") window.location.hash = "#/news/" + featured.slug; });
+  }
+
+  document.getElementById("newsGrid").innerHTML = rest.map(a => `
+    <article class="card news-card reveal" data-slug="${a.slug}" tabindex="0">
+      <div class="nc-visual"></div>
+      <div class="nc-body">
+        <div class="meta-row"><span class="tag">${a.category}</span><span>${formatDate(a.date)}</span></div>
+        <h3>${a.title}</h3>
+        <p>${a.excerpt}</p>
+      </div>
+    </article>`).join("");
+
+  document.getElementById("newsGrid").addEventListener("click", (e) => {
+    const card = e.target.closest(".news-card");
+    if(card) window.location.hash = "#/news/" + card.dataset.slug;
+  });
+  document.getElementById("newsGrid").addEventListener("keypress", (e) => {
+    if(e.key !== "Enter") return;
+    const card = e.target.closest(".news-card");
+    if(card) window.location.hash = "#/news/" + card.dataset.slug;
+  });
+
+  function renderArticle(article){
+    document.getElementById("articleBody").innerHTML = `
+      <div class="meta-row"><span class="tag">${article.category}</span><span>${formatDate(article.date)}</span><span>${article.readTime}</span></div>
+      <h1>${article.title}</h1>
+      ${article.body.map(p => `<p>${p}</p>`).join("")}
+    `;
+  }
+
+  /* ============ RULES RENDER ============ */
+  document.getElementById("rulesList").innerHTML = RULES_DATA.map((cat, i) => `
+    <details class="rule-category reveal" ${i === 0 ? "open" : ""}>
+      <summary><span>${cat.title}</span><span class="chev">▾</span></summary>
+      <div class="rule-body"><ul>${cat.rules.map(r => `<li>${r}</li>`).join("")}</ul></div>
+    </details>`).join("");
+
+  /* ============ STAT COUNT-UP ============ */
+  function animateCount(el){
+    const target = parseFloat(el.dataset.count);
+    const decimal = parseInt(el.dataset.decimal || "0");
+    const suffix = el.dataset.suffix || "";
+    const duration = 1400;
+    const start = performance.now();
+    function tick(now){
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = target * eased;
+      el.textContent = (decimal ? val.toFixed(decimal) : Math.round(val)) + suffix;
+      if(p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* ============ REVEAL ON SCROLL ============ */
+  let revealObserver;
+  function initRevealObserver(){
+    if(revealObserver) revealObserver.disconnect();
+    const els = document.querySelectorAll(".page.active .reveal:not(.in), .page.active .stat h3[data-count]:not(.counted)");
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("in");
+          if(entry.target.dataset && entry.target.dataset.count && !entry.target.classList.contains("counted")){
+            entry.target.classList.add("counted");
+            animateCount(entry.target);
+          }
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".page.active .reveal").forEach(el => revealObserver.observe(el));
+    document.querySelectorAll(".page.active .stat h3[data-count]").forEach(el => revealObserver.observe(el));
+  }
+
+  /* ============ AMBIENT PARTICLE CANVAS ============ */
+  const canvas = document.getElementById("bg-canvas");
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function initParticles(){
+    const count = Math.min(60, Math.floor((window.innerWidth * window.innerHeight) / 26000));
+    particles = Array.from({length: count}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.6 + 0.4,
+      vy: Math.random() * 0.25 + 0.05,
+      vx: (Math.random() - 0.5) * 0.15,
+      hue: Math.random() > 0.5 ? "139,92,246" : "96,165,250",
+      a: Math.random() * 0.5 + 0.15
+    }));
+  }
+  function drawParticles(){
+    ctx.clearRect(0,0,canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.y -= p.vy; p.x += p.vx;
+      if(p.y < -10) p.y = canvas.height + 10;
+      if(p.x < -10) p.x = canvas.width + 10;
+      if(p.x > canvas.width + 10) p.x = -10;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${p.hue}, ${p.a})`;
+      ctx.fill();
+    });
+    if(!reduceMotion) requestAnimationFrame(drawParticles);
+  }
+  resizeCanvas();
+  initParticles();
+  drawParticles();
+  window.addEventListener("resize", () => { resizeCanvas(); initParticles(); });
+
+  /* ============ DISCORD INVITE PLACEHOLDER HANDLING ============
+     Real invite link: set data-discord-invite hrefs below to your
+     actual invite (e.g. https://discord.gg/yourcode). Until then,
+     these buttons are wired to open Discord's landing page so no
+     link on the site is dead. */
+  document.querySelectorAll("[data-discord-invite]").forEach(a => {
+    a.setAttribute("href", "https://discord.com");
+  });
+
+  /* ============ INIT ============ */
+  router();
+})();
+</script>
+</body>
+</html>
