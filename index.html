@@ -66,6 +66,21 @@
   }
 
   /* ===== background system ===== */
+  /* CUSTOM BACKGROUND IMAGE — set your image path in the CSS variable below.
+     Example: --custom-bg-url: url("assets/background.jpg");
+     Leave as none to use the default gradient/particle background only. */
+:root{
+  --custom-bg-url: url("assets/background.jpg");
+}
+  .bg-image{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(180deg, rgba(7,6,17,.82), rgba(7,6,17,.92)),
+      var(--custom-bg-url);
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+  }
   #bg-canvas{position:fixed; inset:0; z-index:0; pointer-events:none;}
   .bg-glow{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
   .bg-glow::before, .bg-glow::after{
@@ -465,6 +480,7 @@
 </head>
 <body>
 
+<div class="bg-image" aria-hidden="true"></div>
 <canvas id="bg-canvas" aria-hidden="true"></canvas>
 <div class="bg-glow" aria-hidden="true"></div>
 <div class="bg-grid" aria-hidden="true"></div>
@@ -595,18 +611,7 @@
           <option value="resolution">Sort: Resolution</option>
         </select>
       </div>
-      <div class="chip-row" id="chipRow">
-        <button class="chip active" data-cat="all">All</button>
-        <button class="chip" data-cat="16x">16x</button>
-        <button class="chip" data-cat="32x">32x</button>
-        <button class="chip" data-cat="64x">64x</button>
-        <button class="chip" data-cat="128x">128x</button>
-        <button class="chip" data-cat="Short Swords">Short Swords</button>
-        <button class="chip" data-cat="Bedwars">Bedwars</button>
-        <button class="chip" data-cat="Skywars">Skywars</button>
-        <button class="chip" data-cat="UHC">UHC</button>
-        <button class="chip" data-cat="FPS">FPS</button>
-      </div>
+      <div class="chip-row" id="chipRow"></div>
       <p class="count-line" id="resultCount"></p>
       <div class="packs-grid" id="packsGrid"></div>
     </div>
@@ -750,7 +755,242 @@
      no fake pack entries are rendered. Drop real pack objects into
      PACKS_DATA (same shape) and the search/filter/sort UI will work
      immediately with no other changes needed. */
-  const PACKS_DATA = []; // { name, categories:[...], resolution, addedAt }
+  const PACKS_DATA = [
+    { name: "StraightLiner", categories: ["Revamp"], resolution: null },
+    { name: "Clean85", categories: [], resolution: null },
+    { name: "Crispy Christmas", categories: ["32x"], resolution: 32 },
+    { name: "Noname", categories: [], resolution: null },
+    { name: "Stoack X Okaiya", categories: ["32x"], resolution: 32 },
+    { name: "Regalis", categories: ["16x"], resolution: 16 },
+    { name: "Damage 87", categories: [], resolution: null },
+    { name: "fronga", categories: ["Private"], resolution: null },
+    { name: "oPumpkins", categories: ["32x"], resolution: 32 },
+    { name: "spirit", categories: ["32x", "PvP"], resolution: 32 },
+    { name: "velvet armorite", categories: ["Edit"], resolution: null },
+    { name: "Purple Fade", categories: [], resolution: null },
+    { name: "ISSCISU68INSeSlSSeSlSeSlESeSlT...", categories: [], resolution: null },
+    { name: "Sora 0", categories: ["16x"], resolution: 16 },
+    { name: "blacklight", categories: ["Revamp"], resolution: null },
+    { name: "Purple", categories: ["32x"], resolution: 32 },
+    { name: "Lethcargy", categories: ["20x"], resolution: 20 },
+    { name: "NEVER SLEEP", categories: [], resolution: null },
+    { name: "Septa", categories: ["256x"], resolution: 256 },
+    { name: "Zgiants Under the Sea", categories: ["Extract"], resolution: null },
+    { name: "Krampus", categories: ["128x"], resolution: 128 },
+    { name: "Mavi 716x", categories: ["716x"], resolution: 716 },
+    { name: "Mavi 8716x", categories: [], resolution: null },
+    { name: "Mavi 8716x", categories: [], resolution: null },
+    { name: "5SIX PATHS", categories: [], resolution: null },
+    { name: "dead doves", categories: [], resolution: null },
+    { name: "PEZZY82k Pack", categories: [], resolution: null },
+    { name: "Wioh", categories: ["Private"], resolution: null },
+    { name: "bJirz 310k", categories: ["16x", "Short Swords"], resolution: 16 },
+    { name: "Tearful", categories: ["16x"], resolution: 16 },
+    { name: "korcla", categories: [], resolution: null },
+    { name: "Akame", categories: ["256x"], resolution: 256 },
+    { name: "Violet 2nd Sword", categories: [], resolution: null },
+    { name: "Diluc", categories: ["32x"], resolution: 32 },
+    { name: "IRUSOS", categories: [], resolution: null },
+    { name: "Glamorous", categories: [], resolution: null },
+    { name: "Pearl", categories: ["16x"], resolution: 16 },
+    { name: "lTemicron", categories: [], resolution: null },
+    { name: "Heaven", categories: ["32x", "Extract"], resolution: 32 },
+    { name: "Aquamarine", categories: [], resolution: null },
+    { name: "Shady", categories: [], resolution: null },
+    { name: "Shady", categories: [], resolution: null },
+    { name: "Gold WAR", categories: ["Revamp"], resolution: null },
+    { name: "eason15", categories: [], resolution: null },
+    { name: "Blue Revamp", categories: ["128x", "Revamp"], resolution: 128 },
+    { name: "365", categories: [], resolution: null },
+    { name: "Blue", categories: [], resolution: null },
+    { name: "kf arrogance", categories: [], resolution: null },
+    { name: "NotSus", categories: ["16x"], resolution: 16 },
+    { name: "pack_inside_here", categories: [], resolution: null },
+    { name: "Jibay", categories: ["32x"], resolution: 32 },
+    { name: "flare fmash", categories: ["Mashup"], resolution: null },
+    { name: "Marvel", categories: ["16x"], resolution: 16 },
+    { name: "b L E V I", categories: [], resolution: null },
+    { name: "lFEAR", categories: [], resolution: null },
+    { name: "lFEAR", categories: [], resolution: null },
+    { name: "Venom 87", categories: ["16x", "Revamp"], resolution: 16 },
+    { name: "Hoxsing", categories: [], resolution: null },
+    { name: "Blur+", categories: [], resolution: null },
+    { name: "Fallen Angel", categories: [], resolution: null },
+    { name: "iplogger", categories: [], resolution: null },
+    { name: "notveg", categories: [], resolution: null },
+    { name: "lSNITCH8", categories: [], resolution: null },
+    { name: "KZA", categories: [], resolution: null },
+    { name: "bArbw", categories: ["Mashup", "Bedwars"], resolution: null },
+    { name: "bArbw", categories: ["Mashup", "Bedwars"], resolution: null },
+    { name: "Private Red", categories: ["32x", "Private"], resolution: 32 },
+    { name: "dLotus", categories: [], resolution: null },
+    { name: "Versax", categories: [], resolution: null },
+    { name: "lEyt3hor", categories: ["168x"], resolution: 168 },
+    { name: "Hurtin", categories: [], resolution: null },
+    { name: "fDewier Prodigy", categories: ["Revamp"], resolution: null },
+    { name: "Talus", categories: [], resolution: null },
+    { name: "acidic", categories: [], resolution: null },
+    { name: "ka Drunk", categories: [], resolution: null },
+    { name: "a1.14 default8", categories: ["Default Edit"], resolution: null },
+    { name: "minazuki", categories: [], resolution: null },
+    { name: "Pvrple Mash", categories: ["Mashup"], resolution: null },
+    { name: "bCold", categories: [], resolution: null },
+    { name: "Venturo 2k", categories: ["Revamp"], resolution: null },
+    { name: "Kryptoke", categories: [], resolution: null },
+    { name: "love", categories: [], resolution: null },
+    { name: "NEVER SLEEP", categories: ["16x"], resolution: 16 },
+    { name: "Kaglcami", categories: ["16x"], resolution: 16 },
+    { name: "Kaglcami", categories: ["16x"], resolution: 16 },
+    { name: "IEREEN", categories: ["32x", "Private"], resolution: 32 },
+    { name: "Lunar bvfl2", categories: ["128x"], resolution: 128 },
+    { name: "True Blue", categories: ["32x"], resolution: 32 },
+    { name: "Atlas", categories: ["32x", "Revamp"], resolution: 32 },
+    { name: "kaa BLEED", categories: [], resolution: null },
+    { name: "Apocalypse", categories: ["32x"], resolution: 32 },
+    { name: "Kuroyuri", categories: ["512x", "Revamp"], resolution: 512 },
+    { name: "Whores For Two8", categories: [], resolution: null },
+    { name: "Muslubi", categories: ["16x"], resolution: 16 },
+    { name: "Therea", categories: ["32x"], resolution: 32 },
+    { name: "Marvel", categories: ["16x"], resolution: 16 },
+    { name: "Amesth9th", categories: ["16x"], resolution: 16 },
+    { name: "the ghost of texturepacks", categories: [], resolution: null },
+    { name: "trauma", categories: [], resolution: null },
+    { name: "Venom", categories: ["16x"], resolution: 16 },
+    { name: "High On Sugar", categories: [], resolution: null },
+    { name: "High On Salt", categories: [], resolution: null },
+    { name: "High On Lean", categories: [], resolution: null },
+    { name: "High On Christmas", categories: [], resolution: null },
+    { name: "High On Maledives", categories: [], resolution: null },
+    { name: "qAdamh High On Suagr Edit", categories: ["Edit"], resolution: null },
+    { name: "ImNotPvPers Sword Overlay", categories: ["PvP"], resolution: null },
+    { name: "High On Sugar EDIT", categories: ["Edit"], resolution: null },
+    { name: "THE_LOST_AND_THE_FLACCID", categories: [], resolution: null },
+    { name: "LUVY mashup !", categories: ["Mashup"], resolution: null },
+    { name: "Grey 32x", categories: ["32x"], resolution: 32 },
+    { name: "High On Spearton", categories: [], resolution: null },
+    { name: "High on Anime", categories: [], resolution: null },
+    { name: "Twlxght Cerulean Edit", categories: ["Edit"], resolution: null },
+    { name: "Twlxght 400 Subs [16x]", categories: ["16x"], resolution: 16 },
+    { name: "Nyqo Lost and Flacid Edit", categories: ["Edit"], resolution: null },
+    { name: "Green Love [32x]", categories: ["32x"], resolution: 32 },
+    { name: "Twlxght 500 Subs [16x]", categories: ["16x"], resolution: 16 },
+    { name: "Twlxght's 200 Subs TP Pack", categories: [], resolution: null },
+    { name: "Twlxght's 300 Subs Pack", categories: [], resolution: null },
+    { name: "Surreal", categories: [], resolution: null },
+    { name: "Apothic Heat PRIVATE", categories: ["Private"], resolution: null },
+    { name: "Protocoliste - EDIT PRIVATE", categories: ["Private", "Edit"], resolution: null },
+    { name: "bulma (burn edit)", categories: ["Edit"], resolution: null },
+    { name: "majesta Skinny Swords", categories: ["Short Swords"], resolution: null },
+    { name: "skfaa A9SIRSISIW skfaa", categories: [], resolution: null },
+    { name: "Koltz 1x Distilling", categories: [], resolution: null },
+    { name: "Lunar Private", categories: ["Private"], resolution: null },
+    { name: "Torys Default Edit", categories: ["Edit", "Default Edit"], resolution: null },
+    { name: "shk.. .r what shk..", categories: [], resolution: null },
+    { name: "Luminous", categories: [], resolution: null },
+    { name: "Ball", categories: [], resolution: null },
+    { name: "Avery Unreleased", categories: [], resolution: null },
+    { name: "Poorly 32x", categories: ["32x"], resolution: 32 },
+    { name: "Rephotic 16x", categories: ["16x"], resolution: 16 },
+    { name: "Hurtin procksiva edit", categories: ["Edit"], resolution: null },
+    { name: "lulszFault 16x", categories: ["16x"], resolution: 16 },
+    { name: "Dynamo", categories: [], resolution: null },
+    { name: "skf arrogance skf", categories: [], resolution: null },
+    { name: "scarlet mash", categories: ["Mashup"], resolution: null },
+    { name: "Talus 5Pack", categories: [], resolution: null },
+    { name: "rabbitbouncer", categories: [], resolution: null },
+    { name: "ICilah RBW 16x", categories: ["16x", "Bedwars"], resolution: 16 },
+    { name: "ICilah RBW 32x", categories: ["32x", "Bedwars"], resolution: 32 },
+    { name: "Blue Style New", categories: [], resolution: null },
+    { name: "Cobalt 16x", categories: ["16x"], resolution: 16 },
+    { name: "Nuvola", categories: [], resolution: null },
+    { name: "blarry37 private", categories: ["Private"], resolution: null },
+    { name: "Rega [32x]", categories: ["32x"], resolution: 32 },
+    { name: "Trechin other sword", categories: [], resolution: null },
+    { name: "WoWieSeagull 3k [32x] (unreleased)", categories: ["32x"], resolution: 32 },
+    { name: "caphotic [128x]", categories: ["128x"], resolution: 128 },
+    { name: "Konana [32x] - Copy", categories: ["32x"], resolution: 32 },
+    { name: "Rhophasofa Red", categories: [], resolution: null },
+    { name: "Ruby", categories: [], resolution: null },
+    { name: "dproxiva 800 sub pack", categories: [], resolution: null },
+    { name: "Drussel Mash", categories: ["Mashup"], resolution: null },
+    { name: "Freyr", categories: [], resolution: null },
+    { name: "moonlight", categories: [], resolution: null },
+    { name: "Paradise [16x7]", categories: [], resolution: null },
+    { name: "Holiday ^_^", categories: [], resolution: null },
+    { name: "vengeance", categories: [], resolution: null },
+    { name: "747", categories: [], resolution: null },
+    { name: "Tightt 316x", categories: ["316x"], resolution: 316 },
+    { name: "Eum3 Blue Revamp (Better Swords)", categories: ["Revamp"], resolution: null },
+    { name: "slate [16x]", categories: ["16x"], resolution: 16 },
+    { name: "Astral [16x]", categories: ["16x"], resolution: 16 },
+    { name: "RankedBedwars [32x]", categories: ["32x", "Bedwars"], resolution: 32 },
+    { name: "16x pack", categories: ["16x"], resolution: 16 },
+    { name: "Blackberry 0-16x", categories: ["16x"], resolution: 16 },
+    { name: "32x pack", categories: ["32x"], resolution: 32 },
+    { name: "Stimpy_WAR_Eum3_Revamp_1", categories: ["Revamp"], resolution: null },
+    { name: "A Cold Sunday", categories: [], resolution: null },
+    { name: "andwis spearmint bape revamp", categories: ["Revamp"], resolution: null },
+    { name: "Apothic X Amaranth [32x] Edit", categories: ["32x", "Edit"], resolution: 32 },
+    { name: "Prodigy [764x]", categories: ["764x"], resolution: 764 },
+    { name: "Oden [16x]", categories: ["16x"], resolution: 16 },
+    { name: "BoSoole", categories: [], resolution: null },
+    { name: "Dimkus 1k Pack (16x)", categories: ["16x"], resolution: 16 },
+    { name: "vapor v2", categories: [], resolution: null },
+    { name: "lbombies 10k pack", categories: [], resolution: null },
+    { name: "Hurtin FPS ItzDeepSky Revamp", categories: ["Revamp", "FPS"], resolution: null },
+    { name: "Talus 1.5k", categories: [], resolution: null },
+    { name: "Korclass 3k Pack", categories: [], resolution: null },
+    { name: "Lust 64x", categories: ["64x"], resolution: 64 },
+    { name: "AKIMO 916x", categories: ["916x"], resolution: 916 },
+    { name: "EUM39Bluee", categories: [], resolution: null },
+    { name: "tóxica 816x", categories: ["816x"], resolution: 816 },
+    { name: "evakz4fault", categories: [], resolution: null },
+    { name: "! 3A0E Meme Pack Revamp", categories: ["Revamp"], resolution: null },
+    { name: "ldark default", categories: ["Default Edit"], resolution: null },
+    { name: "Purple Navy 32x", categories: ["32x"], resolution: 32 },
+    { name: "Deproved 1k", categories: [], resolution: null },
+    { name: "New Style Blue", categories: [], resolution: null },
+    { name: "b1V1", categories: [], resolution: null },
+    { name: "C1X3 [b16x7]", categories: [], resolution: null },
+    { name: "bggmen (viprah ver.)", categories: [], resolution: null },
+    { name: "Pilastro", categories: [], resolution: null },
+    { name: "dfVaes f5l15 k", categories: [], resolution: null },
+    { name: "dslswitch", categories: [], resolution: null },
+    { name: "finterlude", categories: [], resolution: null },
+    { name: "salvation", categories: [], resolution: null },
+    { name: "Snowy", categories: [], resolution: null },
+    { name: "oSlScages", categories: [], resolution: null },
+    { name: "bkendo_false_bans_4_fun_7b16x7", categories: [], resolution: null },
+    { name: "braidens_mix_Short_swords", categories: [], resolution: null },
+    { name: "cerulean revamp", categories: ["Revamp"], resolution: null },
+    { name: "Cooldude951 50k - Copy", categories: [], resolution: null },
+    { name: "Count it up!", categories: [], resolution: null },
+    { name: "Evoon mashup v3", categories: ["Mashup"], resolution: null },
+    { name: "Flare 32x Revamp", categories: ["32x", "Revamp"], resolution: 32 },
+    { name: "FRANCHISE", categories: [], resolution: null },
+    { name: "fruitful edit", categories: ["Edit"], resolution: null },
+    { name: "groovy", categories: [], resolution: null },
+    { name: "Incognito 16x", categories: ["16x"], resolution: 16 },
+    { name: "Janpan Private", categories: ["Private"], resolution: null },
+    { name: "knitter", categories: [], resolution: null },
+    { name: "LowerNight_REVAMP", categories: ["Revamp"], resolution: null },
+    { name: "MEUS", categories: [], resolution: null },
+    { name: "Ojeda 32x Trustys edit remake", categories: ["32x", "Edit"], resolution: 32 },
+    { name: "Ojeda_1|32x", categories: ["32x"], resolution: 32 },
+    { name: "Pipe Down 16x", categories: ["16x"], resolution: 16 },
+    { name: "prox_priv", categories: [], resolution: null },
+    { name: "QUITTERS (Dewier 2k Revamp)", categories: ["Revamp"], resolution: null },
+    { name: "rays 1k pack", categories: [], resolution: null },
+    { name: "schematica edit", categories: ["Edit"], resolution: null },
+    { name: "SMITE", categories: [], resolution: null },
+    { name: "Spedgywedge Galaxy", categories: [], resolution: null },
+    { name: "speedy rbw", categories: ["Bedwars"], resolution: null },
+    { name: "Stonneeeeeeeeee", categories: [], resolution: null },
+    { name: "THE_LOST_AND_THE_FLACCID", categories: [], resolution: null },
+    { name: "thunderstrike rbw", categories: ["Bedwars"], resolution: null },
+    { name: "war 32x", categories: ["32x"], resolution: 32 },
+    { name: "YAH.", categories: [], resolution: null }
+  ]; // { name, categories:[...], resolution, addedAt } — real PvP Verse pack library (234 packs)
 
   const NEWS_DATA = [
     {
@@ -1025,6 +1265,21 @@
       </div>`).join("");
   }
 
+  /* Build category chips from whatever tags actually exist in PACKS_DATA,
+     ranked by how common they are. This means the filter row always matches
+     the real library — add/remove packs and the chips adjust automatically. */
+  function buildChips(){
+    const counts = {};
+    PACKS_DATA.forEach(p => (p.categories || []).forEach(c => {
+      counts[c] = (counts[c] || 0) + 1;
+    }));
+    const ranked = Object.keys(counts).sort((a,b) => counts[b] - counts[a]).slice(0, 12);
+    const chipsHTML = ['<button class="chip active" data-cat="all">All</button>']
+      .concat(ranked.map(cat => `<button class="chip" data-cat="${cat}">${cat}</button>`));
+    chipRow.innerHTML = chipsHTML.join("");
+  }
+  buildChips();
+
   packSearch.addEventListener("input", renderPacks);
   packSort.addEventListener("change", renderPacks);
   chipRow.addEventListener("click", (e) => {
@@ -1178,7 +1433,7 @@
      these buttons are wired to open Discord's landing page so no
      link on the site is dead. */
   document.querySelectorAll("[data-discord-invite]").forEach(a => {
-    a.setAttribute("href", "https://discord.gg/K26SzkhsZ");
+    a.setAttribute("href", "https://discord.com");
   });
 
   /* ============ INIT ============ */
