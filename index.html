@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script>
+  (function(){
+    try{
+      var saved = localStorage.getItem("pvpverse-theme");
+      var theme = saved === "light" || saved === "dark" ? saved : "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+    }catch(e){ document.documentElement.setAttribute("data-theme", "dark"); }
+  })();
+</script>
 <title>PvP Verse — Minecraft 1.8 PvP Packs &amp; Community</title>
 <meta name="description" content="PvP Verse is a Minecraft 1.8 PvP community featuring 300+ PvP packs, community rewards, and custom services." />
 <meta property="og:title" content="PvP Verse — Minecraft 1.8 PvP Packs & Community" />
@@ -31,10 +40,40 @@
     --border:rgba(168,139,250,.16);
     --border-hover:rgba(192,132,252,.45);
     --glass:rgba(20,16,40,.55);
+    --overlay-rgb:7,6,17;
+    --nav-bg:rgba(10,8,24,.55);
+    --nav-bg-scrolled:rgba(8,6,20,.78);
+    --menu-bg:rgba(9,7,22,.92);
+    --fab-bg:rgba(10,8,24,.75);
+    --surface-fill:rgba(255,255,255,.02);
     --font-display:'Space Grotesk', sans-serif;
     --font-head:'Orbitron', sans-serif;
     --font-body:'Inter', sans-serif;
+    color-scheme: dark;
+    transition: background-color .35s ease;
   }
+  :root[data-theme="light"]{
+    --bg-0:#F7F6FC;
+    --bg-1:#EFEBFB;
+    --bg-2:#E9E4FA;
+    --text-hi:#1E1B2E;
+    --text-mid:#463F5E;
+    --text-low:#6E6785;
+    --border:rgba(124,58,237,.2);
+    --border-hover:rgba(124,58,237,.42);
+    --glass:rgba(255,255,255,.65);
+    --overlay-rgb:247,246,252;
+    --nav-bg:rgba(255,255,255,.55);
+    --nav-bg-scrolled:rgba(255,255,255,.85);
+    --menu-bg:rgba(255,255,255,.94);
+    --fab-bg:rgba(255,255,255,.82);
+    --surface-fill:rgba(124,58,237,.05);
+    color-scheme: light;
+  }
+  :root[data-theme="light"] body{
+    background:var(--bg-0);
+  }
+  * { transition: background-color .3s ease, border-color .3s ease, color .3s ease; }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
   body{
@@ -72,7 +111,7 @@
   .bg-image{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background-image:
-      linear-gradient(180deg, rgba(7,6,17, var(--custom-bg-dim)), rgba(7,6,17, calc(var(--custom-bg-dim) + 0.15))),
+      linear-gradient(180deg, rgba(var(--overlay-rgb), var(--custom-bg-dim)), rgba(var(--overlay-rgb), calc(var(--custom-bg-dim) + 0.15))),
       var(--custom-bg-url);
     background-size:cover;
     background-position:center;
@@ -168,10 +207,10 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:12px 18px; border-radius:16px;
     border:1px solid var(--border);
-    background:rgba(10,8,24,.55); backdrop-filter:blur(16px);
+    background:var(--nav-bg); backdrop-filter:blur(16px);
     transition:background .35s ease, padding .35s ease, border-color .35s ease;
   }
-  header.scrolled .nav-inner{padding:8px 16px; background:rgba(8,6,20,.78);}
+  header.scrolled .nav-inner{padding:8px 16px; background:var(--nav-bg-scrolled);}
   .logo{
     display:flex; align-items:center; gap:10px;
     font-family:var(--font-head); font-weight:800; font-size:17px; color:var(--text-hi); letter-spacing:.02em;
@@ -200,7 +239,7 @@
   .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-5.6px) rotate(-45deg);}
   .mobile-menu{
     position:fixed; inset:78px 16px auto 16px; z-index:49;
-    background:rgba(9,7,22,.92); backdrop-filter:blur(18px);
+    background:var(--menu-bg); backdrop-filter:blur(18px);
     border:1px solid var(--border); border-radius:16px; padding:10px;
     display:flex; flex-direction:column; gap:2px;
     transform:translateY(-14px) scale(.98); opacity:0; pointer-events:none;
@@ -376,7 +415,7 @@
   }
   .search-box{
     flex:1; min-width:220px; display:flex; align-items:center; gap:10px; padding:11px 16px;
-    border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.02);
+    border-radius:10px; border:1px solid var(--border); background:var(--surface-fill);
     transition:border-color .2s ease, box-shadow .2s ease;
   }
   .search-box:focus-within{border-color:var(--hl-purple); box-shadow:0 0 0 3px rgba(139,92,246,.18);}
@@ -385,13 +424,13 @@
   }
   .search-box input:focus{outline:none;}
   .sort-select{
-    padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,.02);
+    padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surface-fill);
     color:var(--text-mid); font-size:13.5px; font-family:var(--font-display);
   }
   .chip-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:34px;}
   .chip{
     padding:9px 16px; border-radius:999px; font-size:13px; font-family:var(--font-display); font-weight:500;
-    border:1px solid var(--border); color:var(--text-mid); background:rgba(255,255,255,.02);
+    border:1px solid var(--border); color:var(--text-mid); background:var(--surface-fill);
     transition:all .2s ease;
   }
   .chip:hover{border-color:var(--border-hover); color:var(--text-hi);}
@@ -498,7 +537,7 @@
   .music-toggle{
     position:fixed; bottom:22px; right:22px; z-index:60;
     width:52px; height:52px; border-radius:50%;
-    border:1px solid var(--border); background:rgba(10,8,24,.75); backdrop-filter:blur(14px);
+    border:1px solid var(--border); background:var(--fab-bg); backdrop-filter:blur(14px);
     display:flex; align-items:center; justify-content:center;
     box-shadow:0 10px 30px -10px rgba(0,0,0,.6);
     transition:border-color .2s ease, transform .2s ease;
@@ -513,6 +552,21 @@
   .music-toggle:not(.playing) .bars span{animation-play-state:paused; height:4px !important;}
   @keyframes barbounce{0%,100%{height:4px;} 50%{height:16px;}}
   @media (prefers-reduced-motion: reduce){ .music-toggle .bars span{animation:none;} }
+
+  /* ===== theme toggle ===== */
+  .theme-toggle{
+    width:38px; height:38px; border-radius:9px; border:1px solid var(--border);
+    background:var(--glass); display:flex; align-items:center; justify-content:center;
+    transition:border-color .2s ease, transform .2s ease;
+    flex-shrink:0;
+  }
+  .theme-toggle:hover{border-color:var(--border-hover); transform:translateY(-1px);}
+  .theme-toggle svg{width:18px; height:18px; color:var(--hl-purple);}
+  .theme-toggle .icon-sun{display:none;}
+  :root[data-theme="light"] .theme-toggle .icon-moon{display:none;}
+  :root[data-theme="light"] .theme-toggle .icon-sun{display:block;}
+  .mobile-menu .theme-toggle{width:100%; height:auto; padding:12px; border-radius:10px; flex-direction:row; gap:10px; justify-content:flex-start;}
+  .mobile-menu .theme-toggle span.tt-label{font-family:var(--font-display); font-size:14px; font-weight:500; color:var(--text-mid);}
 
   @media (max-width:900px){
     .section{padding:80px 0;}
@@ -560,6 +614,10 @@
       <a href="#/about" data-route="/about">About</a>
     </nav>
     <div class="nav-cta">
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch to light theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      </button>
       <a class="btn btn-primary" href="#" data-discord-invite="true" target="_blank" rel="noopener">
         <span class="label">Join Discord</span> <span class="arrow">→</span>
       </a>
@@ -571,6 +629,11 @@
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
+  <button class="theme-toggle" id="themeToggleMobile" aria-label="Switch to light theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    <span class="tt-label">Toggle theme</span>
+  </button>
   <a href="#/" data-route="/">Home</a>
   <a href="#/packs" data-route="/packs">Packs</a>
   <a href="#/news" data-route="/news">News</a>
@@ -1611,6 +1674,24 @@
       musicToggle.setAttribute("aria-label", "Play background music");
     }
   });
+
+  /* ============ THEME TOGGLE ============
+     Persists to localStorage so the choice survives a refresh. The inline
+     script in <head> applies the saved theme before first paint to avoid
+     a flash of the wrong theme. */
+  function applyTheme(theme){
+    document.documentElement.setAttribute("data-theme", theme);
+    try{ localStorage.setItem("pvpverse-theme", theme); }catch(e){}
+    const label = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
+    [themeToggle, themeToggleMobile].forEach(btn => btn && btn.setAttribute("aria-label", label));
+  }
+  const themeToggle = document.getElementById("themeToggle");
+  const themeToggleMobile = document.getElementById("themeToggleMobile");
+  function currentTheme(){ return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark"; }
+  function toggleTheme(){ applyTheme(currentTheme() === "light" ? "dark" : "light"); }
+  applyTheme(currentTheme());
+  themeToggle && themeToggle.addEventListener("click", toggleTheme);
+  themeToggleMobile && themeToggleMobile.addEventListener("click", toggleTheme);
 
   /* ============ DISCORD INVITE ============ */
   document.querySelectorAll("[data-discord-invite]").forEach(a => {
