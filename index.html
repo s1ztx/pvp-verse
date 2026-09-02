@@ -5,11 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <script>
   (function(){
+    var VALID = ["system","light","dark","horror","neon","gold"];
     try{
-      var saved = localStorage.getItem("pvpverse-theme");
-      var theme = saved === "light" || saved === "dark" ? saved : "dark";
-      document.documentElement.setAttribute("data-theme", theme);
-    }catch(e){ document.documentElement.setAttribute("data-theme", "dark"); }
+      var choice = localStorage.getItem("pvpverse-theme-choice");
+      if(VALID.indexOf(choice) === -1) choice = "dark";
+      var visual = choice;
+      if(choice === "system"){
+        visual = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      }
+      document.documentElement.setAttribute("data-theme", visual);
+      document.documentElement.setAttribute("data-theme-choice", choice);
+    }catch(e){
+      document.documentElement.setAttribute("data-theme", "dark");
+      document.documentElement.setAttribute("data-theme-choice", "dark");
+    }
   })();
 </script>
 <title>PvP Verse — Minecraft 1.8 PvP Packs &amp; Community</title>
@@ -73,6 +82,54 @@
   :root[data-theme="light"] body{
     background:var(--bg-0);
   }
+
+  /* ===== HORROR THEME ===== */
+  :root[data-theme="horror"]{
+    --bg-0:#0A0000; --bg-1:#140202; --bg-2:#1C0404;
+    --purple-1:#8B0000; --purple-2:#B91C1C; --purple-3:#DC2626;
+    --blue-1:#450A0A; --blue-2:#7F1D1D;
+    --hl-purple:#EF4444; --hl-blue:#F87171;
+    --text-hi:#FDECEC; --text-mid:#D9A8A8; --text-low:#8B6060;
+    --border:rgba(220,38,38,.25); --border-hover:rgba(239,68,68,.5);
+    --glass:rgba(20,2,2,.6);
+    --overlay-rgb:5,0,0;
+    --nav-bg:rgba(20,2,2,.55); --nav-bg-scrolled:rgba(28,4,4,.82);
+    --menu-bg:rgba(24,3,3,.92); --fab-bg:rgba(20,2,2,.78);
+    --surface-fill:rgba(220,38,38,.05);
+    color-scheme: dark;
+  }
+
+  /* ===== NEON THEME ===== */
+  :root[data-theme="neon"]{
+    --bg-0:#05020F; --bg-1:#0B0620; --bg-2:#100930;
+    --purple-1:#FF2E9A; --purple-2:#D6009A; --purple-3:#FF6EC7;
+    --blue-1:#00E5FF; --blue-2:#00B8D9;
+    --hl-purple:#FF6EC7; --hl-blue:#00E5FF;
+    --text-hi:#F0FBFF; --text-mid:#B9D7E6; --text-low:#7B94A6;
+    --border:rgba(0,229,255,.25); --border-hover:rgba(255,110,199,.5);
+    --glass:rgba(10,5,25,.58);
+    --overlay-rgb:5,2,15;
+    --nav-bg:rgba(11,6,32,.55); --nav-bg-scrolled:rgba(9,5,25,.82);
+    --menu-bg:rgba(11,6,32,.92); --fab-bg:rgba(11,6,32,.78);
+    --surface-fill:rgba(0,229,255,.05);
+    color-scheme: dark;
+  }
+
+  /* ===== GOLD THEME ===== */
+  :root[data-theme="gold"]{
+    --bg-0:#0A0800; --bg-1:#141000; --bg-2:#1C1600;
+    --purple-1:#B8860B; --purple-2:#D4AF37; --purple-3:#F4C430;
+    --blue-1:#8B6F00; --blue-2:#A67C00;
+    --hl-purple:#FFD700; --hl-blue:#FFC93C;
+    --text-hi:#FFF8E1; --text-mid:#E0C68A; --text-low:#A6905A;
+    --border:rgba(212,175,55,.25); --border-hover:rgba(255,215,0,.5);
+    --glass:rgba(20,16,0,.58);
+    --overlay-rgb:10,8,0;
+    --nav-bg:rgba(20,16,0,.55); --nav-bg-scrolled:rgba(28,22,0,.82);
+    --menu-bg:rgba(24,19,0,.92); --fab-bg:rgba(20,16,0,.78);
+    --surface-fill:rgba(212,175,55,.05);
+    color-scheme: dark;
+  }
   * { transition: background-color .3s ease, border-color .3s ease, color .3s ease; }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
@@ -110,12 +167,29 @@
   }
   .bg-image{
     position:fixed; inset:0; z-index:0; pointer-events:none;
-    background-image:
-      linear-gradient(180deg, rgba(var(--overlay-rgb), var(--custom-bg-dim)), rgba(var(--overlay-rgb), calc(var(--custom-bg-dim) + 0.15))),
-      var(--custom-bg-url);
+    background-image:var(--custom-bg-url);
     background-size:cover;
     background-position:center;
     background-attachment:fixed;
+  }
+  .bg-overlay{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    background:linear-gradient(180deg, rgba(var(--overlay-rgb), var(--custom-bg-dim)), rgba(var(--overlay-rgb), calc(var(--custom-bg-dim) + 0.15)));
+  }
+  .bg-video{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    width:100%; height:100%; object-fit:cover;
+    display:none; /* shown via JS only once a real video source is confirmed to load */
+  }
+  .bg-video.has-source{ display:block; }
+  /* Video is a desktop-only enhancement: skip it on small screens (mobile
+     data/battery) and when the visitor prefers reduced motion. The static
+     image + overlay underneath always covers both cases. */
+  @media (max-width:860px){
+    .bg-video.has-source{ display:none; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-video.has-source{ display:none; }
   }
   #bg-canvas{position:fixed; inset:0; z-index:0; pointer-events:none;}
   .bg-glow{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;}
@@ -553,20 +627,74 @@
   @keyframes barbounce{0%,100%{height:4px;} 50%{height:16px;}}
   @media (prefers-reduced-motion: reduce){ .music-toggle .bars span{animation:none;} }
 
-  /* ===== theme toggle ===== */
-  .theme-toggle{
+  /* ===== theme picker ===== */
+  .theme-menu{position:relative;}
+  .theme-menu-btn{
     width:38px; height:38px; border-radius:9px; border:1px solid var(--border);
     background:var(--glass); display:flex; align-items:center; justify-content:center;
-    transition:border-color .2s ease, transform .2s ease;
-    flex-shrink:0;
+    transition:border-color .2s ease, transform .2s ease; flex-shrink:0;
   }
-  .theme-toggle:hover{border-color:var(--border-hover); transform:translateY(-1px);}
-  .theme-toggle svg{width:18px; height:18px; color:var(--hl-purple);}
-  .theme-toggle .icon-sun{display:none;}
-  :root[data-theme="light"] .theme-toggle .icon-moon{display:none;}
-  :root[data-theme="light"] .theme-toggle .icon-sun{display:block;}
-  .mobile-menu .theme-toggle{width:100%; height:auto; padding:12px; border-radius:10px; flex-direction:row; gap:10px; justify-content:flex-start;}
-  .mobile-menu .theme-toggle span.tt-label{font-family:var(--font-display); font-size:14px; font-weight:500; color:var(--text-mid);}
+  .theme-menu-btn:hover{border-color:var(--border-hover); transform:translateY(-1px);}
+  .theme-menu-btn svg{width:18px; height:18px; color:var(--hl-purple);}
+  .theme-menu-panel{
+    position:absolute; top:calc(100% + 10px); right:0; z-index:80;
+    width:200px; padding:8px; border-radius:14px;
+    border:1px solid var(--border); background:var(--menu-bg); backdrop-filter:blur(18px);
+    box-shadow:0 20px 50px -16px rgba(0,0,0,.6);
+    opacity:0; transform:translateY(-8px) scale(.97); pointer-events:none;
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .theme-menu-panel.open{opacity:1; transform:none; pointer-events:auto;}
+  .theme-option{
+    width:100%; display:flex; align-items:center; gap:10px; padding:10px 10px;
+    border-radius:9px; background:transparent; text-align:left;
+    font-family:var(--font-display); font-size:13.5px; font-weight:500; color:var(--text-mid);
+    transition:background .15s ease, color .15s ease;
+  }
+  .theme-option:hover{background:rgba(139,92,246,.1); color:var(--text-hi);}
+  .theme-option.active{color:var(--text-hi); background:rgba(139,92,246,.14);}
+  .theme-option .swatch{
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    border:1px solid rgba(255,255,255,.25);
+  }
+  .theme-option .opt-label{flex:1;}
+  .theme-option .check{color:var(--hl-purple); font-size:13px; opacity:0;}
+  .theme-option.active .check{opacity:1;}
+
+  .theme-row-mobile{padding:6px 10px 12px;}
+  .theme-row-mobile .trm-label{
+    font-family:var(--font-display); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--text-low); margin-bottom:8px; display:block;
+  }
+  .theme-row-mobile .trm-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px;}
+  .theme-row-mobile .theme-option{
+    flex-direction:column; gap:6px; align-items:center; padding:10px 6px; font-size:11px;
+    border:1px solid var(--border);
+  }
+  .theme-row-mobile .theme-option .swatch{width:22px; height:22px;}
+  .theme-row-mobile .theme-option.active{border-color:var(--border-hover);}
+  .theme-row-mobile .theme-option .check{display:none;}
+
+  /* ===== custom cursor ===== */
+  html.custom-cursor, html.custom-cursor *{ cursor:none !important; }
+  .cursor-dot, .cursor-ring{
+    position:fixed; top:0; left:0; z-index:9999; pointer-events:none;
+    border-radius:50%; display:none;
+  }
+  html.custom-cursor .cursor-dot, html.custom-cursor .cursor-ring{ display:block; }
+  .cursor-dot{
+    width:6px; height:6px; margin:-3px 0 0 -3px;
+    background:var(--hl-purple); box-shadow:0 0 10px var(--hl-purple);
+  }
+  .cursor-ring{
+    width:34px; height:34px; margin:-17px 0 0 -17px;
+    border:1.5px solid var(--hl-purple); opacity:.5;
+    transition:width .18s ease, height .18s ease, margin .18s ease, opacity .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .cursor-ring.hovering{
+    width:54px; height:54px; margin:-27px 0 0 -27px;
+    opacity:.9; border-color:var(--hl-blue); background:rgba(139,92,246,.1);
+  }
 
   @media (max-width:900px){
     .section{padding:80px 0;}
@@ -577,6 +705,9 @@
 <body>
 
 <a href="#main-content" class="skip-link">Skip to content</a>
+
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
 <!-- BACKGROUND MUSIC — point src at your own licensed audio file, e.g.
      assets/wokesha.mp3. I can't include the actual song file myself since
@@ -589,6 +720,14 @@
   <div class="bars"><span></span><span></span><span></span></div>
 </button>
 
+<!-- BACKGROUND VIDEO (optional) — set a src on the <source> below to use a
+     video instead of / alongside the image background, e.g. assets/bg.mp4.
+     Leave the src empty (as-is) to keep using only the image background.
+     Hidden automatically on small screens and when the visitor prefers
+     reduced motion — the image background shows instead in both cases. -->
+<video class="bg-video" id="bgVideo" autoplay muted loop playsinline poster="assets/background.jpg" aria-hidden="true">
+  <source src="" type="video/mp4">
+</video>
 <div class="bg-image" aria-hidden="true"></div>
 <canvas id="bg-canvas" aria-hidden="true"></canvas>
 <div class="bg-glow" aria-hidden="true"></div>
@@ -614,10 +753,12 @@
       <a href="#/about" data-route="/about">About</a>
     </nav>
     <div class="nav-cta">
-      <button class="theme-toggle" id="themeToggle" aria-label="Switch to light theme">
-        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-      </button>
+      <div class="theme-menu" id="themeMenu">
+        <button class="theme-menu-btn" id="themeMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Choose theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2a10 10 0 1 0 10 10c0-1.1-.9-2-2-2h-2a3 3 0 0 1-3-3V5c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+        <div class="theme-menu-panel" id="themeMenuPanel" role="menu"></div>
+      </div>
       <a class="btn btn-primary" href="#" data-discord-invite="true" target="_blank" rel="noopener">
         <span class="label">Join Discord</span> <span class="arrow">→</span>
       </a>
@@ -629,11 +770,10 @@
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
-  <button class="theme-toggle" id="themeToggleMobile" aria-label="Switch to light theme">
-    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-    <span class="tt-label">Toggle theme</span>
-  </button>
+  <div class="theme-row-mobile">
+    <span class="trm-label">Theme</span>
+    <div class="trm-grid" id="themeRowMobile"></div>
+  </div>
   <a href="#/" data-route="/">Home</a>
   <a href="#/packs" data-route="/packs">Packs</a>
   <a href="#/news" data-route="/news">News</a>
@@ -1799,23 +1939,131 @@
     }
   });
 
-  /* ============ THEME TOGGLE ============
-     Persists to localStorage so the choice survives a refresh. The inline
-     script in <head> applies the saved theme before first paint to avoid
-     a flash of the wrong theme. */
-  function applyTheme(theme){
-    document.documentElement.setAttribute("data-theme", theme);
-    try{ localStorage.setItem("pvpverse-theme", theme); }catch(e){}
-    const label = theme === "light" ? "Switch to dark theme" : "Switch to light theme";
-    [themeToggle, themeToggleMobile].forEach(btn => btn && btn.setAttribute("aria-label", label));
+  /* ============ BACKGROUND VIDEO ============
+     Only shown once a real <source src> is present (see the HTML comment
+     near the <video> tag for how to add your own). Prevents an empty/broken
+     video element from covering the image background. */
+  (function(){
+    const bgVideo = document.getElementById("bgVideo");
+    const source = bgVideo.querySelector("source");
+    if(source && source.getAttribute("src")){
+      bgVideo.classList.add("has-source");
+      bgVideo.play().catch(() => {});
+    }
+  })();
+
+  /* ============ THEME PICKER ============
+     Six choices: system, light, dark, horror, neon, gold. "system" isn't a
+     visual theme itself — it resolves to light/dark based on the OS setting
+     and keeps listening for OS changes live. Persists to localStorage; the
+     inline script in <head> applies the saved choice before first paint so
+     there's no flash of the wrong theme. */
+  const THEME_META = [
+    { id: "system", label: "System", swatch: "linear-gradient(135deg, #0B0920 50%, #F7F6FC 50%)" },
+    { id: "light",  label: "Light",  swatch: "linear-gradient(135deg, #FFFFFF, #EDE9FE)" },
+    { id: "dark",   label: "Dark",   swatch: "linear-gradient(135deg, #7C3AED, #3B82F6)" },
+    { id: "horror", label: "Horror", swatch: "linear-gradient(135deg, #0A0000, #DC2626)" },
+    { id: "neon",   label: "Neon",   swatch: "linear-gradient(135deg, #FF2E9A, #00E5FF)" },
+    { id: "gold",   label: "Gold",   swatch: "linear-gradient(135deg, #0A0800, #D4AF37)" }
+  ];
+  const THEME_IDS = THEME_META.map(t => t.id);
+  const systemQuery = window.matchMedia("(prefers-color-scheme: light)");
+
+  function resolveVisualTheme(choice){
+    if(choice === "system") return systemQuery.matches ? "light" : "dark";
+    return choice;
   }
-  const themeToggle = document.getElementById("themeToggle");
-  const themeToggleMobile = document.getElementById("themeToggleMobile");
-  function currentTheme(){ return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark"; }
-  function toggleTheme(){ applyTheme(currentTheme() === "light" ? "dark" : "light"); }
-  applyTheme(currentTheme());
-  themeToggle && themeToggle.addEventListener("click", toggleTheme);
-  themeToggleMobile && themeToggleMobile.addEventListener("click", toggleTheme);
+  function getStoredChoice(){
+    try{
+      const v = localStorage.getItem("pvpverse-theme-choice");
+      return THEME_IDS.indexOf(v) !== -1 ? v : "dark";
+    }catch(e){ return "dark"; }
+  }
+  function optionHTML(t, active){
+    return `<button class="theme-option${active ? " active" : ""}" data-theme-choice="${t.id}" role="menuitemradio" aria-checked="${active}">
+      <span class="swatch" style="background:${t.swatch}"></span>
+      <span class="opt-label">${t.label}</span>
+      <span class="check">✓</span>
+    </button>`;
+  }
+  function renderThemeMenus(activeChoice){
+    themeMenuPanel.innerHTML = THEME_META.map(t => optionHTML(t, t.id === activeChoice)).join("");
+    themeRowMobile.innerHTML = THEME_META.map(t => optionHTML(t, t.id === activeChoice)).join("");
+  }
+  function applyThemeChoice(choice){
+    if(THEME_IDS.indexOf(choice) === -1) choice = "dark";
+    const visual = resolveVisualTheme(choice);
+    document.documentElement.setAttribute("data-theme", visual);
+    document.documentElement.setAttribute("data-theme-choice", choice);
+    try{ localStorage.setItem("pvpverse-theme-choice", choice); }catch(e){}
+    renderThemeMenus(choice);
+  }
+
+  const themeMenuBtn = document.getElementById("themeMenuBtn");
+  const themeMenuPanel = document.getElementById("themeMenuPanel");
+  const themeRowMobile = document.getElementById("themeRowMobile");
+
+  applyThemeChoice(getStoredChoice());
+
+  themeMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = themeMenuPanel.classList.toggle("open");
+    themeMenuBtn.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", (e) => {
+    if(themeMenuPanel.classList.contains("open") && !themeMenuPanel.contains(e.target) && e.target !== themeMenuBtn && !themeMenuBtn.contains(e.target)){
+      themeMenuPanel.classList.remove("open");
+      themeMenuBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && themeMenuPanel.classList.contains("open")){
+      themeMenuPanel.classList.remove("open");
+      themeMenuBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+  [themeMenuPanel, themeRowMobile].forEach(container => {
+    container.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-theme-choice]");
+      if(!btn) return;
+      applyThemeChoice(btn.dataset.themeChoice);
+      themeMenuPanel.classList.remove("open");
+      themeMenuBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+  systemQuery.addEventListener("change", () => {
+    if(document.documentElement.getAttribute("data-theme-choice") === "system"){
+      applyThemeChoice("system");
+    }
+  });
+
+  /* ============ CUSTOM CURSOR ============
+     Skipped on touch devices and when the visitor prefers reduced motion —
+     the default system cursor is used in both cases. */
+  if(!reduceMotion && canHover){
+    document.documentElement.classList.add("custom-cursor");
+    const cursorDot = document.getElementById("cursorDot");
+    const cursorRing = document.getElementById("cursorRing");
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let ringX = mouseX, ringY = mouseY;
+    const HOVER_SELECTOR = "a, button, input, select, summary, .card, .chip, .tag-badge";
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      cursorRing.classList.toggle("hovering", !!e.target.closest(HOVER_SELECTOR));
+    }, { passive:true });
+
+    window.addEventListener("mousedown", () => cursorRing.style.opacity = ".95");
+    window.addEventListener("mouseup", () => cursorRing.style.opacity = "");
+
+    (function cursorLoop(){
+      ringX += (mouseX - ringX) * 0.18;
+      ringY += (mouseY - ringY) * 0.18;
+      cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
+      requestAnimationFrame(cursorLoop);
+    })();
+  }
 
   /* ============ DISCORD INVITE ============ */
   document.querySelectorAll("[data-discord-invite]").forEach(a => {
